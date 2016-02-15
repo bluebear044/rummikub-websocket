@@ -24,8 +24,8 @@
       $( document ).ready(function() {
       console.log( "ready!" );
 
-      //var host = location.origin.replace(/^http/, 'ws')
-      var host = "ws://desolate-wave-36629.herokuapp.com/";
+      var host = location.origin.replace(/^http/, 'ws')
+      //var host = "ws://desolate-wave-36629.herokuapp.com/";
       var ws = new WebSocket(host);
 
       $('input[type="button"]').click(function() {
