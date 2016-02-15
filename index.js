@@ -22,9 +22,6 @@ wss.broadcast = function(data) {
 
 
 wss.on("connection", function(ws) {
-  var id = setInterval(function() {
-    ws.send(JSON.stringify(new Date()), function() {  })
-  }, 1000)
 
     console.log("websocket connection open")
 
@@ -34,6 +31,5 @@ wss.on("connection", function(ws) {
     
   ws.on("close", function() {
     console.log("websocket connection close")
-    clearInterval(id)
   })
 })
