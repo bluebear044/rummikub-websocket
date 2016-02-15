@@ -19,7 +19,7 @@ wss.broadcast = function(data) {
   for (var i in this.clients) {
 
 console.log("@@ : " + data);      
-    this.clients[i].send(data);
+    this.clients[i].send(JSON.stringify(data));
   }
 };
 
