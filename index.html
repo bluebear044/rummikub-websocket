@@ -24,12 +24,15 @@
       $( document ).ready(function() {
       console.log( "ready!" );
 
-      var host = location.origin.replace(/^http/, 'ws')
+      //var host = location.origin.replace(/^http/, 'ws')
+      var host = "ws://desolate-wave-36629.herokuapp.com/";
       var ws = new WebSocket(host);
 
       $('input[type="button"]').click(function() {
-      alert("aa");
-      ws.send("hi");
+
+        var msg = $("#msg").val();
+        console.log(msg);
+        ws.send(msg);
       });
 
       
@@ -46,6 +49,7 @@
   <body>
     <h1>Pings</h1>
     <ul id='pings'></ul>
+    <input type="text" id="msg" />
     <input type="button" value="send" />
   </body>
 </html>
