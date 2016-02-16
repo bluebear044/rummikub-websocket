@@ -10,11 +10,21 @@
         list-style: none;
         margin: 0;
         padding: 0;
+        border: 1px solid #90bade;
       }
 
       ul li {
         line-height: 1.4;
       }
+
+      div#nav ul
+      {
+        width: 200px;
+        height: 350px;
+        overflow: auto;
+      }
+
+      
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -22,37 +32,55 @@
     <script>
 
       $( document ).ready(function() {
-      console.log( "ready!" );
+        console.log( "ready!" );
 
-      var host = location.origin.replace(/^http/, 'ws')
-      //var host = "ws://desolate-wave-36629.herokuapp.com/";
-      var ws = new WebSocket(host);
+          var host = location.origin.replace(/^http/, 'ws')
+      		//var host = "ws://desolate-wave-36629.herokuapp.com/";
+          //var host = "ws://127.0.0.1:5000";
 
-      $('input[type="button"]').click(function() {
+          var ws = new WebSocket(host);
 
-        var msg = $("#msg").val();
-        console.log(msg);
-        ws.send(msg);
-      });
+          $( "#sendBtn" ).click(function() {
+            sendMessage(ws);
+          });
 
-      
-      ws.onmessage = function (event) {
+          $( "#msg" ).keypress(function(e) {
+            if(e.keyCode == 13) {
+              sendMessage(ws);
+            }
+          });
 
-        console.log("message!!");
+          ws.onmessage = function (event) {
 
-        var li = document.createElement('li');
-        li.innerHTML = JSON.parse(event.data);
-        document.querySelector('#pings').appendChild(li);
-        };
-      });
-	
-      
+           console.log("message received : " + event.data);
+
+           var li = document.createElement('li');
+           li.innerHTML = JSON.parse(event.data);
+           document.querySelector('#chats').appendChild(li);
+
+           $("#chats").animate({ scrollTop: $(document).height() }, "slow");
+           return false;
+         };
+       });
+
+      function sendMessage(ws) {
+       var msg = $( "#msg" ).val();
+       console.log(msg);
+       ws.send(msg);
+       $( "#msg" ).val("");
+     }
+	      
     </script>
   </head>
   <body>
-    <h1>Pings</h1>
-    <ul id='pings'></ul>
+    <h1>Chats</h1>
+
+    <div id="nav">
+      <ul id="chats">
+      </ul>
+    </div>
+    
     <input type="text" id="msg" />
-    <input type="button" value="send" />
+    <input id="sendBtn" type="button" value="send" />
   </body>
 </html>
