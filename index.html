@@ -3,6 +3,7 @@
 
     <link rel="stylesheet" href="rummikub.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="rummikub.js"></script>
     <script src="constant.js"></script>
 
     <script>
@@ -10,9 +11,9 @@
           
           console.log( "ready!" );
 
-          var host = location.origin.replace(/^http/, 'ws')
+          //var host = location.origin.replace(/^http/, 'ws')
       		//var host = "ws://desolate-wave-36629.herokuapp.com/";
-          //var host = "ws://127.0.0.1:5000";
+          var host = "ws://127.0.0.1:5000";
 
           var ws = new WebSocket(host);
 
@@ -112,24 +113,31 @@
       function processInfo(responseObject) {
         $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, responseObject.param.connectCount));
 
-        if(responseObject.param.startFlag == true ) {
+        if(responseObject.param.gamePlayingFlag == true ) {
           $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
         }else {
           $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_READY);
         }
         
         //Active/Deactive start button
-        if(responseObject.param.connectCount > 1 && responseObject.param.startFlag == false) {
+        if(responseObject.param.connectCount > 1 && responseObject.param.gamePlayingFlag == false) {
           $( "#startBtn" ).attr("disabled", false);
         }else {
           $( "#startBtn" ).attr("disabled", true);
         }
 
         //Active/Deactive exit button
-        if(responseObject.param.startFlag == false) {
+        if(responseObject.param.gamePlayingFlag == false) {
           $( "#exitBtn" ).attr("disabled", true);
         }else {
           $( "#exitBtn" ).attr("disabled", false);
+        }
+
+        //Active/Deactive turn button
+        if(responseObject.param.myTurnFlag == true) {
+          $( "#turnBtn" ).attr("disabled", false);
+        }else {
+          $( "#turnBtn" ).attr("disabled", true);
         }
 
       }
