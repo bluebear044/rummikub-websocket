@@ -49,7 +49,8 @@ Rummikub.prototype.removeUser = function(id) {
 };
 
 //User class
-function User (id) {
+function User (id, ownWebsocket) {
+	this.ownWebsocket = ownWebsocket; // each users websocket
 	this.id = id;
 	this.registerYN = false;
 	this.use = [];

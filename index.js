@@ -22,14 +22,13 @@ console.log("websocket server created");
 //static variable
 var rummikub = new Rummikub();
 var connectCount = 0;
-var clients = {};
 var gamePlayingFlag = false;
 
 //broadcast client
 wss.broadcast = function(data) {
     console.log("broadcast msg : " + data);
-    for (var i in this.clients) {
-        this.clients[i].send(JSON.stringify(data));
+    for (var i in rummikub.users) {
+        rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
     }
 };
 
@@ -40,10 +39,8 @@ wss.on("connection", function(ws) {
     // Specific id for this client & increment connectCount
     var id = "GUEST_" + UTIL.random4digit();
     connectCount++;
-    // Store the connection method so we can loop through & contact all clients
-    clients[id] = ws;
-    // User Setting
-    rummikub.users.push(new User(id));
+    // Store the connection with ID method so we can loop through & contact all client
+    rummikub.users.push(new User(id, ws));
   
     initConnect();
 
@@ -121,10 +118,8 @@ wss.on("connection", function(ws) {
     function processDisconnect() {
         console.log("websocket connection close");
         //client & connect count delete
-        delete clients[id];
-        connectCount--;
-        //User setting
         rummikub.removeUser(id);
+        connectCount--;
 
         if(gamePlayingFlag == true) {
             processExit();
