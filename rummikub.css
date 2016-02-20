@@ -35,5 +35,14 @@ div#board
   float: left;
   width: 350px;
   height: 350px;
+  border: 1px solid #90bade;
+  margin-bottom: 40px;
+}
+
+div#own
+{
+  float: left;
+  width: 650px;
+  height: 150px;
   border: 1px solid #90bade;  
 }

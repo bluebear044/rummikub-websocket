@@ -16,31 +16,43 @@ var server = http.createServer(app)
 server.listen(port)
 console.log("http server listening on %d", port);
 
-var wss = new WebSocketServer({server: server})
+var webSocketServer = new WebSocketServer({server: server})
 console.log("websocket server created");
 
 //static variable
 var rummikub = new Rummikub();
 var connectCount = 0;
 var gamePlayingFlag = false;
+var turnCount = 1;
+var currentPlayerID;
 
 //broadcast client
-wss.broadcast = function(data) {
-    console.log("broadcast msg : " + data);
+webSocketServer.broadcast = function(data) {
+    console.log("broadcast msg : " + JSON.stringify(data));
     for (var i in rummikub.users) {
         rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
     }
 };
 
+//send specific client
+webSocketServer.sendMessage = function(data, id) {
+    console.log("send msg : " + JSON.stringify(data) + " --> " + id);
+    for (var i in rummikub.users) {
+        if(id == rummikub.users[i].id) {
+            rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
+        }
+    }
+};
+
 //connect client
-wss.on("connection", function(ws) {
+webSocketServer.on("connection", function(ws) {
     
     // Store the connection with ID method so we can loop through & contact all client
     var user = new User("GUEST_" + UTIL.random4digit(), ws);
     rummikub.users.push(user);
     connectCount++;
 
-    initMessage();
+    initUser(user);
 
     //receive message
     ws.on('message', function(message) {
@@ -49,11 +61,11 @@ wss.on("connection", function(ws) {
         
         if(message == CMD.START) {
 
-            processStart();
+            processStart(user);
 
         }else if(message == CMD.TURN) {
 
-            processTurn();
+            processTurn(user);
 
         }else if(message == CMD.EXIT) {
 
@@ -68,64 +80,107 @@ wss.on("connection", function(ws) {
     });
     
     ws.on("close", function() {
-        processDisconnect();
+        processDisconnect(user);
     })
 
     function makeCommand(command, param) {
-        return { "command" : command, "param" : param};
+        return { 
+            "command" : command, 
+            "param" : param
+        };
     }
 
     function boardInfo() {
-        return {"connectCount" : connectCount, "gamePlayingFlag" : gamePlayingFlag, "myTurnFlag" : user.myTurnFlag};
+        return {
+            "connectCount" : connectCount, 
+            "gamePlayingFlag" : gamePlayingFlag, 
+            "turnCount" : turnCount, 
+            "currentPlayerID" : currentPlayerID
+        };
     }
 
-    function initMessage() {
+    function userInfo(user) {
+        return {
+            "id" : user.id,
+            "registerYN" : user.registerYN,
+            "use" : user.use,
+            "own" : user.own
+        };
+    }
+
+    function initUser(user) {
         console.log("websocket connection open");
-        wss.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_JOIN);
-        wss.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_JOIN);
+        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.sendMessage(makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
     }
 
-    function processStart() {
+    function processStart(user) {
 
         rummikub.initializeGame();
-        console.log(rummikub.users);
+        console.log("=================================================")
+        console.log("==                GAME SETTING                 ==")
+        console.log("=================================================")
+        console.log(rummikub.users.toString());
+        console.log("=================================================")
 
         gamePlayingFlag = true;
+        // select next turn player
+        console.log("turnCount : " + turnCount);
+        console.log("rummikub.users.length : " + rummikub.users.length);
+        console.log("turnCount % rummikub.users.length : " + turnCount % rummikub.users.length);
+        console.log("rummikub.users : " + rummikub.users);
+        currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
 
-        wss.broadcast(makeCommand(CMD.START));
-        wss.broadcast(MESSAGE.MSG_START);
-        wss.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(makeCommand(CMD.START));
+        webSocketServer.broadcast(MESSAGE.MSG_START);
+        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+
+        for(var idx in rummikub.users) {
+            webSocketServer.sendMessage(makeCommand( CMD.PRIVATE_INFO, userInfo(rummikub.users[idx]) ), rummikub.users[idx].id);
+        }
+
     }
 
-    function processTurn() {
-        wss.broadcast(makeCommand(CMD.TURN));
-        wss.broadcast(user.id + MESSAGE.MSG_TURN);
+    function processTurn(user) {
+        turnCount++;
+        // select next turn player
+        currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
+
+        webSocketServer.broadcast(makeCommand(CMD.TURN));
+        webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_TURN, user.id));
+        webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID));
+        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
     }
 
     function processExit() {
         gamePlayingFlag = false;
 
-        wss.broadcast(makeCommand(CMD.EXIT));
-        wss.broadcast(MESSAGE.MSG_EXIT);
-        wss.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(makeCommand(CMD.EXIT));
+        webSocketServer.broadcast(MESSAGE.MSG_EXIT);
+        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
     }
 
     function processChat(message) {
-        wss.broadcast(user.id + " : " + message);
+        webSocketServer.broadcast(user.id + " : " + message);
     }
 
-    function processDisconnect() {
+    function processDisconnect(user) {
         console.log("websocket connection close");
         //client & connect count delete
+        console.log("remove id : " + user.id);
+        console.log("before : " + rummikub.users);
         rummikub.removeUser(user.id);
+        console.log("after : " + rummikub.users);
         connectCount--;
+        turnCount = 1;
 
         if(gamePlayingFlag == true) {
             processExit();
         }
 
-        wss.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_DISCONNECT);
-        wss.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_DISCONNECT);
+        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
     }
 
 })

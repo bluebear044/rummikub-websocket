@@ -41,11 +41,17 @@ Rummikub.prototype.initializeTilesToUser = function(user) {
 };
 
 Rummikub.prototype.removeUser = function(id) {
+
+	var removeIndex;
+
 	for(var idx in this.users) {
 		if(id == this.users[idx].id) {
-			delete this.users[idx];
+			removeIndex = idx;
+			break;
 		}
 	}
+	
+	this.users.splice(removeIndex,1);
 };
 
 //User class
@@ -55,8 +61,14 @@ function User (id, ownWebsocket) {
 	this.registerYN = false;
 	this.use = [];
 	this.own = [];
-	this.myTurnFlag = false;
 }
+
+User.prototype.toString = function(id) {
+	return "id : " + this.id
+	+ " registerYN : " + this.registerYN 
+	+ " use : " + JSON.stringify(this.use) 
+	+ " own : " + JSON.stringify(this.own);
+};
 
 //Tile class
 function Tile (score, color, isJoker) {
