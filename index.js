@@ -34,16 +34,15 @@ wss.broadcast = function(data) {
 
 //connect client
 wss.on("connection", function(ws) {
-    // Turn Flag
-    var myTurnFlag = false;
-    // Specific id for this client & increment connectCount
-    var id = "GUEST_" + UTIL.random4digit();
-    connectCount++;
+    
     // Store the connection with ID method so we can loop through & contact all client
-    rummikub.users.push(new User(id, ws));
-  
-    initConnect();
+    var user = new User("GUEST_" + UTIL.random4digit(), ws);
+    rummikub.users.push(user);
+    connectCount++;
 
+    initMessage();
+
+    //receive message
     ws.on('message', function(message) {
        
         console.log("raw message : " + message);
@@ -77,12 +76,12 @@ wss.on("connection", function(ws) {
     }
 
     function boardInfo() {
-        return {"connectCount" : connectCount, "gamePlayingFlag" : gamePlayingFlag, "myTurnFlag" : myTurnFlag};
+        return {"connectCount" : connectCount, "gamePlayingFlag" : gamePlayingFlag, "myTurnFlag" : user.myTurnFlag};
     }
 
-    function initConnect() {
+    function initMessage() {
         console.log("websocket connection open");
-        wss.broadcast(UTIL.printNowDate() + "<br/>" + id + MESSAGE.MSG_JOIN);
+        wss.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_JOIN);
         wss.broadcast(makeCommand( CMD.INFO, boardInfo() ));
     }
 
@@ -100,7 +99,7 @@ wss.on("connection", function(ws) {
 
     function processTurn() {
         wss.broadcast(makeCommand(CMD.TURN));
-        wss.broadcast(id + MESSAGE.MSG_TURN);
+        wss.broadcast(user.id + MESSAGE.MSG_TURN);
     }
 
     function processExit() {
@@ -112,20 +111,20 @@ wss.on("connection", function(ws) {
     }
 
     function processChat(message) {
-        wss.broadcast(id + " : " + message);
+        wss.broadcast(user.id + " : " + message);
     }
 
     function processDisconnect() {
         console.log("websocket connection close");
         //client & connect count delete
-        rummikub.removeUser(id);
+        rummikub.removeUser(user.id);
         connectCount--;
 
         if(gamePlayingFlag == true) {
             processExit();
         }
 
-        wss.broadcast(UTIL.printNowDate() + "<br/>" + id + MESSAGE.MSG_DISCONNECT);
+        wss.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_DISCONNECT);
         wss.broadcast(makeCommand( CMD.INFO, boardInfo() ));
     }
 
