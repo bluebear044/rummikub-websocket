@@ -134,6 +134,7 @@ webSocketServer.on("connection", function(ws) {
 
         webSocketServer.broadcast(makeCommand(CMD.START));
         webSocketServer.broadcast(MESSAGE.MSG_START);
+        webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID));
         webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
 
         for(var idx in rummikub.users) {
@@ -179,7 +180,8 @@ webSocketServer.on("connection", function(ws) {
             processExit();
         }
 
-        webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_DISCONNECT);
+        webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + UTIL.getMessage(MESSAGE.MSG_DISCONNECT, user.id));
+        webSocketServer.broadcast(MESSAGE.MSG_EXIT);
         webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
     }
 
