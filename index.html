@@ -4,44 +4,47 @@
     <link rel="stylesheet" href="rummikub.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="rummikub.js"></script>
+    <script src="game.js"></script>
     <script src="constant.js"></script>
 
     <script>
-
       // static user info
       var user = {};
 
       $( document ).ready(function() {
-          
           console.log( "ready!" );
 
-          //var host = location.origin.replace(/^http/, 'ws')
-      		//var host = "ws://desolate-wave-36629.herokuapp.com/";
-          var host = "ws://127.0.0.1:5000";
-
+          var host = location.origin.replace(/^http/, 'ws')
+          //var host = "ws://desolate-wave-36629.herokuapp.com/";
+          //var host = "ws://127.0.0.1:5000";
+          
+          //Websocket Instance
           var ws = new WebSocket(host);
 
+          //Game Instance
+          var game = new Game();
+
           $( "#sendBtn" ).click(function() {
-            sendMessage(ws);
+            game.sendMessage(ws);
           });
 
           //keyboard
           $( "#msg" ).keypress(function(e) {
             if(e.keyCode == 13) {
-              sendMessage(ws);
+              game.sendMessage(ws);
             }
           });
 
           $( "#startBtn" ).click(function() {
-            startGame(ws);
+            game.startGame(ws);
           });
 
           $( "#turnBtn" ).click(function() {
-            nextTurn(ws);
+            game.nextTurn(ws);
           });
 
           $( "#exitBtn" ).click(function() {
-            exitGame(ws);
+            game.exitGame(ws);
           });
 
           //onmessage
@@ -51,115 +54,22 @@
             var responseObject = JSON.parse(event.data);
             
             if(responseObject.command == CMD.START) {
-              processStart(responseObject);
+              game.processStart(responseObject);
             }else if(responseObject.command == CMD.TURN) {
-              processTurn(responseObject);
+              game.processTurn(responseObject);
             }else if(responseObject.command == CMD.EXIT) {
-              processExit(responseObject);
+              game.processExit(responseObject);
             }else if(responseObject.command == CMD.INFO) {
-              processInfo(responseObject);
+              game.processInfo(responseObject, user);
             }else if(responseObject.command == CMD.PRIVATE_INFO) {
-              processPrivateInfo(responseObject);
+              game.processPrivateInfo(responseObject, user);
             }else {
-              processChat(event);
+              game.processChat(event);
             }
           
           };
 
-       });
-
-      function sendMessage(ws) {
-       var msg = $( "#msg" ).val();
-       console.log(msg);
-       ws.send(msg);
-       $( "#msg" ).val("");
-      }
-
-      function startGame(ws) {
-        console.log("start game!!");
-        ws.send(CMD.START);
-      }
-
-      function nextTurn(ws) {
-        console.log("nextTurn!!");
-        ws.send(CMD.TURN);
-      }
-
-      function exitGame(ws) {
-        console.log("exit game!!");
-        ws.send(CMD.EXIT);
-      }
-
-      function processChat(event) {
-        var li = document.createElement('li');
-        li.innerHTML = JSON.parse(event.data);
-        document.querySelector('#chats').appendChild(li);
-
-        $("#chats").animate({ scrollTop: $(document).height() }, "slow");
-        return false;
-      }
-
-      function processStart(responseObject) {
-        $( "#exitBtn" ).attr("disabled", false);
-      }      
-
-      function processTurn(responseObject) {
-        //TODO
-        //responseObject를 통해 전달받은 board 타일정보 및 새롭게 전달받은 타일정보를 반영한다.
-        $( "#board" ).html("Game View");
-      }
-
-      function processExit(responseObject) {
-        $( "#board" ).empty();
-      }
-
-      function processInfo(responseObject) {
-
-        $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, responseObject.param.connectCount));
-
-        if(responseObject.param.gamePlayingFlag == true ) {
-          $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
-          $( "#turnCount" ).html(UTIL.getMessage(MESSAGE.MSG_TURN_COUNT, responseObject.param.turnCount));
-        }else {
-          $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_READY);
-          $( "#turnCount" ).empty();
-        }
-        
-        //Active/Deactive start button
-        if(responseObject.param.connectCount > 1 && responseObject.param.gamePlayingFlag == false) {
-          $( "#startBtn" ).attr("disabled", false);
-        }else {
-          $( "#startBtn" ).attr("disabled", true);
-        }
-
-        //Active/Deactive exit button
-        if(responseObject.param.gamePlayingFlag == false) {
-          $( "#exitBtn" ).attr("disabled", true);
-        }else {
-          $( "#exitBtn" ).attr("disabled", false);
-        }
-
-        //Active/Deactive turn button
-        console.log(responseObject.param.currentPlayerID);
-        if(this.user.id == responseObject.param.currentPlayerID && responseObject.param.gamePlayingFlag == true) {
-          $( "#turnBtn" ).attr("disabled", false);
-        }else {
-          $( "#turnBtn" ).attr("disabled", true);
-        }
-
-      }
-
-      function processPrivateInfo(responseObject) {
-        console.log("private info received : " + responseObject);
-        this.user.id = responseObject.param.id;
-        this.user.registerYN = responseObject.param.registerYN;
-        this.user.use = responseObject.param.use;
-        this.user.own = responseObject.param.own;
-
-        $( "#own" ).html(JSON.stringify(this.user.own));
-        $( "#myInfo" ).html(UTIL.getMessage(MESSAGE.MSG_MY_INFO, this.user.id));
-      }
-
+      });
     </script>
   </head>
   <body>

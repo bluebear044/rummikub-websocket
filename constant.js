@@ -19,7 +19,6 @@ var MESSAGE = {
 	MSG_GAME_READY : "현재 게임 준비중",
 	MSG_GAME_PLAYING : "현재 게임 진행중",
 	MSG_MY_INFO : "당신은 {0} 입니다."
-
 };
 
 var UTIL = {
