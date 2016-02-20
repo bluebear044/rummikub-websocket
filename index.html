@@ -1,38 +1,14 @@
 <html>
   <head>
-    <style>
-      body {
-        font-family: "Helvetica Neue", helvetica, arial;
-        padding: 15px;
-      }
 
-      ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        border: 1px solid #90bade;
-      }
-
-      ul li {
-        line-height: 1.4;
-      }
-
-      div#nav ul
-      {
-        width: 200px;
-        height: 350px;
-        overflow: auto;
-      }
-
-      
-    </style>
-
+    <link rel="stylesheet" href="rummikub.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="constant.js"></script>
 
     <script>
-
       $( document ).ready(function() {
-        console.log( "ready!" );
+          
+          console.log( "ready!" );
 
           var host = location.origin.replace(/^http/, 'ws')
       		//var host = "ws://desolate-wave-36629.herokuapp.com/";
@@ -44,23 +20,45 @@
             sendMessage(ws);
           });
 
+          //keyboard
           $( "#msg" ).keypress(function(e) {
             if(e.keyCode == 13) {
               sendMessage(ws);
             }
           });
 
+          $( "#startBtn" ).click(function() {
+            startGame(ws);
+          });
+
+          $( "#turnBtn" ).click(function() {
+            nextTurn(ws);
+          });
+
+          $( "#exitBtn" ).click(function() {
+            exitGame(ws);
+          });
+
+          //onmessage
           ws.onmessage = function (event) {
 
-           console.log("message received : " + event.data);
+            console.log("message received : " + event.data);
+            var responseObject = JSON.parse(event.data);
+            
+            if(responseObject.command == CMD.START) {
+              processStart(responseObject);
+            }else if(responseObject.command == CMD.TURN) {
+              processTurn(responseObject);
+            }else if(responseObject.command == CMD.EXIT) {
+              processExit(responseObject);
+            }else if(responseObject.command == CMD.INFO) {
+              processInfo(responseObject);
+            }else {
+              processChat(event);
+            }
+          
+          };
 
-           var li = document.createElement('li');
-           li.innerHTML = JSON.parse(event.data);
-           document.querySelector('#chats').appendChild(li);
-
-           $("#chats").animate({ scrollTop: $(document).height() }, "slow");
-           return false;
-         };
        });
 
       function sendMessage(ws) {
@@ -68,19 +66,94 @@
        console.log(msg);
        ws.send(msg);
        $( "#msg" ).val("");
-     }
-	      
+      }
+
+      function startGame(ws) {
+        console.log("start game!!");
+        ws.send(CMD.START);
+      }
+
+      function nextTurn(ws) {
+        console.log("nextTurn!!");
+        ws.send(CMD.TURN);
+      }
+
+      function exitGame(ws) {
+        console.log("exit game!!");
+        ws.send(CMD.EXIT);
+      }
+
+      function processChat(event) {
+        var li = document.createElement('li');
+        li.innerHTML = JSON.parse(event.data);
+        document.querySelector('#chats').appendChild(li);
+
+        $("#chats").animate({ scrollTop: $(document).height() }, "slow");
+        return false;
+      }
+
+      function processStart(responseObject) {
+        
+        //TODO
+        //responseObject를 통해 전달받은 board 타일정보 및 새롭게 전달받은 타일정보를 반영한다.
+        $( "#board" ).html("<span>[Red 1]</span><span>[Red 2]</span><span>[Red 3]</span>");
+
+        $( "#exitBtn" ).attr("disabled", false);
+      }      
+
+      function processTurn(responseObject) {
+
+      }
+
+      function processExit(responseObject) {
+        $( "#board" ).empty();
+      }
+
+      function processInfo(responseObject) {
+        $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, responseObject.param.connectCount));
+
+        if(responseObject.param.startFlag == true ) {
+          $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
+        }else {
+          $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_READY);
+        }
+        
+        //Active/Deactive start button
+        if(responseObject.param.connectCount > 1 && responseObject.param.startFlag == false) {
+          $( "#startBtn" ).attr("disabled", false);
+        }else {
+          $( "#startBtn" ).attr("disabled", true);
+        }
+
+        //Active/Deactive exit button
+        if(responseObject.param.startFlag == false) {
+          $( "#exitBtn" ).attr("disabled", true);
+        }else {
+          $( "#exitBtn" ).attr("disabled", false);
+        }
+
+      }
+
     </script>
   </head>
   <body>
-    <h1>Chats</h1>
+    <h1>Rummikub Online</h1>
+    <p id="connectCount" /><p id="gamePlaying" />
 
-    <div id="nav">
-      <ul id="chats">
-      </ul>
+    <div id="contents">
+      <div id="nav">
+        <ul id="chats">
+        </ul>
+
+        <input type="text" id="msg" />
+        <input id="sendBtn" type="button" value="send" />
+        <input id="startBtn" type="button" value="start" disabled="true" />
+        <input id="turnBtn" type="button" value="turn" disabled="true" />
+        <input id="exitBtn" type="button" value="exit" disabled="true" />
+      </div>
     </div>
-    
-    <input type="text" id="msg" />
-    <input id="sendBtn" type="button" value="send" />
+
+    <div id="board"></div>
+
   </body>
 </html>
