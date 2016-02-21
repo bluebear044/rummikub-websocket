@@ -24,15 +24,6 @@ Game.prototype.exitGame = function(ws) {
   ws.send(CMD.EXIT);
 };
 
-Game.prototype.processChat = function(event) {
-  var li = document.createElement('li');
-  li.innerHTML = JSON.parse(event.data);
-  document.querySelector('#chats').appendChild(li);
-
-  $("#chats").animate({ scrollTop: $(document).height() }, "slow");
-  return false;
-};
-
 Game.prototype.processStart = function(responseObject) {
   $( "#exitBtn" ).attr("disabled", false);
 };

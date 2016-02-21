@@ -163,7 +163,8 @@ webSocketServer.on("connection", function(ws) {
     }
 
     function processChat(message) {
-        webSocketServer.broadcast(user.id + " : " + message);
+        //webSocketServer.broadcast(user.id + " : " + message);
+        webSocketServer.broadcast(message);
     }
 
     function processDisconnect(user) {

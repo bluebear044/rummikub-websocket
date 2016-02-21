@@ -1,6 +1,13 @@
-<html>
-  <head>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="This is Rummikub on Site.">
 
+    <title>Rummikub On</title>
+
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <link rel="stylesheet" href="rummikub.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="rummikub.js"></script>
@@ -14,15 +21,33 @@
       $( document ).ready(function() {
           console.log( "ready!" );
 
-          var host = location.origin.replace(/^http/, 'ws')
+          //var host = location.origin.replace(/^http/, 'ws')
           //var host = "ws://desolate-wave-36629.herokuapp.com/";
-          //var host = "ws://127.0.0.1:5000";
+          var host = "ws://127.0.0.1:5000";
           
           //Websocket Instance
           var ws = new WebSocket(host);
 
           //Game Instance
           var game = new Game();
+
+          var messageBtnFlag = true;
+          $( "#messageBtn" ).click(function() {
+              if(messageBtnFlag == true) {
+                $( "#list" ).css("margin-left","-700px");
+                $( "#list" ).css("width","0px");
+                $( "#main" ).css("width","");
+                $( "#layout" ).css("padding-left","150px");
+                $( "#nav" ).css("margin-left","-150px");
+                messageBtnFlag = false;
+              }else {
+                $( "#list" ).css("margin-left","-350px");
+                $( "#list" ).css("width","350px");
+                $( "#layout" ).css("padding-left","500px");
+                $( "#nav" ).css("margin-left","-500px");
+                messageBtnFlag = true;
+              }
+          });
 
           $( "#sendBtn" ).click(function() {
             game.sendMessage(ws);
@@ -53,47 +78,129 @@
             console.log("message received : " + event.data);
             var responseObject = JSON.parse(event.data);
             
+            //Command Controller
             if(responseObject.command == CMD.START) {
+
               game.processStart(responseObject);
+
             }else if(responseObject.command == CMD.TURN) {
+
               game.processTurn(responseObject);
+
             }else if(responseObject.command == CMD.EXIT) {
+
               game.processExit(responseObject);
+
             }else if(responseObject.command == CMD.INFO) {
+
               game.processInfo(responseObject, user);
+
             }else if(responseObject.command == CMD.PRIVATE_INFO) {
+
               game.processPrivateInfo(responseObject, user);
+
             }else {
-              game.processChat(event);
+
+                var newElementHtml = "";
+                newElementHtml += "<div class=\"board-item pure-g\">";
+                newElementHtml += "<div class=\"pure-u\">";
+                newElementHtml += "<img class=\"board-avatar\" height=\"64\" width=\"64\" src=\"img/reid-avatar.png\">";
+                newElementHtml += "</div>";
+
+                newElementHtml += "<div class=\"pure-u-3-4\">";
+                newElementHtml += "<h5 class=\"board-name\">" + user.id + "</h5>";
+                newElementHtml += "<p class=\"board-desc\">" + JSON.parse(event.data) + "</p>";
+                newElementHtml += "</div>";
+                newElementHtml += "</div>";
+
+                $("#messages").append(newElementHtml);
+
             }
           
           };
 
       });
     </script>
-  </head>
-  <body>
-    <h1>Rummikub Online</h1>
-    <p id="connectCount" />
-    <p id="gamePlaying" />
-    <p id="turnCount" />
-    <p id="myInfo" />
+</head>
+<body>
 
-    <div id="contents">
-      <div id="nav">
-        <ul id="chats">
-        </ul>
+<div id="layout" class="content pure-g">
+    <div id="nav" class="pure-u">
 
-        <input type="text" id="msg" />
-        <input id="sendBtn" type="button" value="send" />
-        <input id="startBtn" type="button" value="start" disabled="true" />
-        <input id="turnBtn" type="button" value="turn" disabled="true" />
-        <input id="exitBtn" type="button" value="exit" disabled="true" />
-      </div>
+        <div class="nav-inner">
+            <button class="primary-button pure-button">Rummikub On</button>
+
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="messageBtn" >Messages <span class="board-count">(?)</span></a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="startBtn" >Start Game</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="turnBtn" >Next Turn</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="exitBtn" >Exit</a></li>
+                    <li class="pure-menu-heading">Information</li>
+
+                    <li class="pure-menu-item">
+                      <a href="#" class="pure-menu-link">
+                        <span class="board-label-work"></span>
+                        Current Player<br />
+                        <span id="myInfo"></span>
+                      </a>
+                    </li>
+                    <li class="pure-menu-item">
+                      <a href="#" class="pure-menu-link">
+                        <span class="board-label-travel"></span>
+                        Game Playing<br />
+                        <span id="gamePlaying"></span>
+                      </a>
+                    </li>
+                    <li class="pure-menu-item">
+                      <a href="#" class="pure-menu-link"><span class="board-label-personal"></span>
+                        Turn Count<br />
+                        <span id="turnCount"></span>
+                      </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
     </div>
 
-    <div id="board"></div>
-    <div id="own"></div>
+    <div id="list" class="pure-u-1">
 
-  </body>
+        <div id="messages"></div>
+
+        <div class="foot-item pure-g">
+            <div class="pure-u-1">
+                <input type="text" id="msg" name="msg" style="width: 250px;" /><button class="secondary-button pure-button" id="sendBtn" >Send</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="main" class="pure-u-1">
+        <div class="board-content">
+
+            <div class="board-content-body">
+                
+                Main Board
+
+            </div>
+
+        </div>
+    </div>
+
+    <div id="main" class="pure-u-1">
+        <div class="foot-content">
+
+            <div class="foot-content-body">
+                
+                Own Board
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
 </html>
