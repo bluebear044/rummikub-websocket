@@ -21,9 +21,9 @@
       $( document ).ready(function() {
           console.log( "ready!" );
 
-          //var host = location.origin.replace(/^http/, 'ws')
+          var host = location.origin.replace(/^http/, 'ws')
           //var host = "ws://desolate-wave-36629.herokuapp.com/";
-          var host = "ws://127.0.0.1:5000";
+          //var host = "ws://127.0.0.1:5000";
           
           //Websocket Instance
           var ws = new WebSocket(host);
