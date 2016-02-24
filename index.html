@@ -1,206 +1,109 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="This is Rummikub on Site.">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<title>rummi</title>
+	<!-- 초기화 -->
+	<link rel="stylesheet" type="text/css" href="./css/basic.css">
+	<!-- rummi css -->
+	<link rel="stylesheet" type="text/css" href="./css/rummi.css">
+	<script type="text/javascript" src="./js/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript" src="./js/redips-drag-min.js"></script>
+	<script type="text/javascript" src="./rummikub.js"></script>
+  <script type="text/javascript" src="./constant.js"></script>
+  <script type="text/javascript" src="./game.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
 
-    <title>Rummikub On</title>
+      var ws = Game.webSocketConnect();
+      ws.onmessage = function (event) {
+        //console.log("message received : " + event.data);
+        var responseObject = JSON.parse(event.data);
 
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <link rel="stylesheet" href="rummikub.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="rummikub.js"></script>
-    <script src="game.js"></script>
-    <script src="constant.js"></script>
+        //Command Controller
+        if(responseObject.command == CMD.START) {
 
-    <script>
-      // static user info
-      var user = {};
+          //game.processStart(responseObject);
 
-      $( document ).ready(function() {
-          console.log( "ready!" );
+        }else if(responseObject.command == CMD.TURN) {
 
-          var host = location.origin.replace(/^http/, 'ws')
-          //var host = "ws://desolate-wave-36629.herokuapp.com/";
-          //var host = "ws://127.0.0.1:5000";
-          
-          //Websocket Instance
-          var ws = new WebSocket(host);
+          //game.processTurn(responseObject);
 
-          //Game Instance
-          var game = new Game();
+        }else if(responseObject.command == CMD.EXIT) {
 
-          var messageBtnFlag = true;
-          $( "#messageBtn" ).click(function() {
-              if(messageBtnFlag == true) {
-                $( "#list" ).css("margin-left","-700px");
-                $( "#list" ).css("width","0px");
-                $( "#main" ).css("width","");
-                $( "#layout" ).css("padding-left","150px");
-                $( "#nav" ).css("margin-left","-150px");
-                messageBtnFlag = false;
-              }else {
-                $( "#list" ).css("margin-left","-350px");
-                $( "#list" ).css("width","350px");
-                $( "#layout" ).css("padding-left","500px");
-                $( "#nav" ).css("margin-left","-500px");
-                messageBtnFlag = true;
-              }
-          });
+          //game.processExit(responseObject);
 
-          $( "#sendBtn" ).click(function() {
-            game.sendMessage(ws);
-          });
+        }else if(responseObject.command == CMD.INFO) {
 
-          //keyboard
-          $( "#msg" ).keypress(function(e) {
-            if(e.keyCode == 13) {
-              game.sendMessage(ws);
+          //game.processInfo(responseObject, user);
+
+        }else if(responseObject.command == CMD.PRIVATE_INFO) {
+
+          //game.processPrivateInfo(responseObject, user);
+
+        }else {
+
+          console.log(responseObject);
+          for(var idx in responseObject) {
+            //console.log(responseObject[idx]);
+          }
+
+          for(var i=1; i<=15; i++) {
+
+            for(var j=1; j<=6; j++) {
+              //console.log(i*j);
             }
-          });
 
-          $( "#startBtn" ).click(function() {
-            game.startGame(ws);
-          });
-
-          $( "#turnBtn" ).click(function() {
-            game.nextTurn(ws);
-          });
-
-          $( "#exitBtn" ).click(function() {
-            game.exitGame(ws);
-          });
-
-          //onmessage
-          ws.onmessage = function (event) {
-
-            console.log("message received : " + event.data);
-            var responseObject = JSON.parse(event.data);
-            
-            //Command Controller
-            if(responseObject.command == CMD.START) {
-
-              game.processStart(responseObject);
-
-            }else if(responseObject.command == CMD.TURN) {
-
-              game.processTurn(responseObject);
-
-            }else if(responseObject.command == CMD.EXIT) {
-
-              game.processExit(responseObject);
-
-            }else if(responseObject.command == CMD.INFO) {
-
-              game.processInfo(responseObject, user);
-
-            }else if(responseObject.command == CMD.PRIVATE_INFO) {
-
-              game.processPrivateInfo(responseObject, user);
-
-            }else {
-
-                var newElementHtml = "";
-                newElementHtml += "<div class=\"board-item pure-g\">";
-                newElementHtml += "<div class=\"pure-u\">";
-                newElementHtml += "<img class=\"board-avatar\" height=\"64\" width=\"64\" src=\"img/reid-avatar.png\">";
-                newElementHtml += "</div>";
-
-                newElementHtml += "<div class=\"pure-u-3-4\">";
-                newElementHtml += "<h5 class=\"board-name\">" + user.id + "</h5>";
-                newElementHtml += "<p class=\"board-desc\">" + JSON.parse(event.data) + "</p>";
-                newElementHtml += "</div>";
-                newElementHtml += "</div>";
-
-                $("#messages").append(newElementHtml);
-
-            }
+          }
           
-          };
 
-      });
-    </script>
+        }
+        
+      }
+
+      Game.makeBoard("#gameBoard", 15, 6);
+      Game.makeBoard("#ownBoard", 15, 2);
+
+      //setting tiles
+      var tile1 = new Tile("1", "red", false);
+      Game.settingTile("#gameBoard", tile1, 1, 2);
+
+      var tile2 = new Tile("30", "red", true);
+      Game.settingTile("#gameBoard", tile2, 1, 3);
+
+      var tile3 = new Tile("3", "red", false);
+      Game.settingTile("#gameBoard", tile3, 1, 4);
+
+      var tile4 = new Tile("11", "blue", false);
+      Game.settingTile("#gameBoard", tile4, 2, 6);
+
+      var tile5 = new Tile("12", "yellow", false);
+      Game.settingTile("#gameBoard", tile5, 2, 8);
+
+      var tile6 = new Tile("5", "black", false);
+      Game.settingTile("#gameBoard", tile6, 2, 9);
+
+      //REDIPS Initialize
+      REDIPS.drag.init();
+      REDIPS.drag.dropMode = 'single';
+      REDIPS.drag.event.dropped = function () {
+        var boardSerializeMap = Game.serializeTable("#gameBoard");
+        //console.log(JSON.stringify(boardSerializeMap));
+        ws.send(JSON.stringify(boardSerializeMap));
+      };
+
+		});
+	</script>
 </head>
 <body>
 
-<div id="layout" class="content pure-g">
-    <div id="nav" class="pure-u">
-
-        <div class="nav-inner">
-            <button class="primary-button pure-button">Rummikub On</button>
-
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="messageBtn" >Messages <span class="board-count">(?)</span></a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="startBtn" >Start Game</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="turnBtn" >Next Turn</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link" id="exitBtn" >Exit</a></li>
-                    <li class="pure-menu-heading">Information</li>
-
-                    <li class="pure-menu-item">
-                      <a href="#" class="pure-menu-link">
-                        <span class="board-label-work"></span>
-                        Current Player<br />
-                        <span id="myInfo"></span>
-                      </a>
-                    </li>
-                    <li class="pure-menu-item">
-                      <a href="#" class="pure-menu-link">
-                        <span class="board-label-travel"></span>
-                        Game Playing<br />
-                        <span id="gamePlaying"></span>
-                      </a>
-                    </li>
-                    <li class="pure-menu-item">
-                      <a href="#" class="pure-menu-link"><span class="board-label-personal"></span>
-                        Turn Count<br />
-                        <span id="turnCount"></span>
-                      </a>
-                    </li>
-                    
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div id="list" class="pure-u-1">
-
-        <div id="messages"></div>
-
-        <div class="foot-item pure-g">
-            <div class="pure-u-1">
-                <input type="text" id="msg" name="msg" style="width: 250px;" /><button class="secondary-button pure-button" id="sendBtn" >Send</button>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="main" class="pure-u-1">
-        <div class="board-content">
-
-            <div class="board-content-body">
-                
-                Main Board
-
-            </div>
-
-        </div>
-    </div>
-
-    <div id="main" class="pure-u-1">
-        <div class="foot-content">
-
-            <div class="foot-content-body" id="own">
-                
-                Own Board
-
-            </div>
-
-        </div>
-    </div>
-
-</div>
+  <div id="redips-drag">
+    <div id="wrap">
+			<table class="board" id="gameBoard"></table>
+			<table class="board" id="ownBoard"></table>
+		</div>
+	</div>
 
 </body>
 </html>

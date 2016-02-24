@@ -1,84 +1,130 @@
-function Game (){
-  //..
-}
+//var host = location.origin.replace(/^http/, 'ws')
+//var host = "ws://desolate-wave-36629.herokuapp.com/";
+var host = "ws://127.0.0.1:5000";
 
-Game.prototype.sendMessage = function(ws) {
-  var msg = $( "#msg" ).val();
-  console.log(msg);
-  ws.send(msg);
-  $( "#msg" ).val("");
-};
+var Game = {
 
-Game.prototype.startGame = function(ws) {
-  console.log("start game!!");
-  ws.send(CMD.START);
-};
+  webSocketConnect: function() {
+    //Websocket Instance
+    return new WebSocket(host);
+  },
 
-Game.prototype.nextTurn = function(ws) {
-  console.log("nextTurn!!");
-  ws.send(CMD.TURN);
-};
+  sendMessage: function(ws) {
+      var msg = $( "#msg" ).val();
+      console.log(msg);
+      ws.send(msg);
+      $( "#msg" ).val("");
+  },
 
-Game.prototype.exitGame = function(ws) {
-  console.log("exit game!!");
-  ws.send(CMD.EXIT);
-};
+  startGame: function(ws) {
+      console.log("start game!!");
+      ws.send(CMD.START);
+  },
 
-Game.prototype.processStart = function(responseObject) {
-  $( "#exitBtn" ).attr("disabled", false);
-};
+  nextTurn: function(ws) {
+      console.log("nextTurn!!");
+      ws.send(CMD.TURN);
+  },
 
-Game.prototype.processTurn = function(responseObject) {
-  //TODO
-  //responseObject를 통해 전달받은 board 타일정보 및 새롭게 전달받은 타일정보를 반영한다.
-  $( "#board" ).html("Game View");
-};
+  exitGame: function(ws) {
+      console.log("exit game!!");
+      ws.send(CMD.EXIT);
+  },
 
-Game.prototype.processExit = function(responseObject) {
-  $( "#board" ).empty();
-};
-
-Game.prototype.processInfo = function(responseObject, user) {
-  $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, responseObject.param.connectCount));
-
-  if(responseObject.param.gamePlayingFlag == true ) {
-    $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
-    $( "#turnCount" ).html(UTIL.getMessage(MESSAGE.MSG_TURN_COUNT, responseObject.param.turnCount));
-  }else {
-    $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_READY);
-    $( "#turnCount" ).empty();
-  }
-  
-  //Active/Deactive start button
-  if(responseObject.param.connectCount > 1 && responseObject.param.gamePlayingFlag == false) {
-    $( "#startBtn" ).attr("disabled", false);
-  }else {
-    $( "#startBtn" ).attr("disabled", true);
-  }
-
-  //Active/Deactive exit button
-  if(responseObject.param.gamePlayingFlag == false) {
-    $( "#exitBtn" ).attr("disabled", true);
-  }else {
+  processStart: function(responseObject) {
     $( "#exitBtn" ).attr("disabled", false);
+  },
+
+  processTurn: function(responseObject) {
+    //TODO
+    //responseObject를 통해 전달받은 board 타일정보 및 새롭게 전달받은 타일정보를 반영한다.
+    $( "#board" ).html("Game View");
+  },
+
+  processExit: function(responseObject) {
+    $( "#board" ).empty();
+  },
+
+  processInfo: function(responseObject, user) {
+    $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, responseObject.param.connectCount));
+
+    if(responseObject.param.gamePlayingFlag == true ) {
+      $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
+      $( "#turnCount" ).html(UTIL.getMessage(MESSAGE.MSG_TURN_COUNT, responseObject.param.turnCount));
+    }else {
+      $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_READY);
+      $( "#turnCount" ).empty();
+    }
+
+    //Active/Deactive start button
+    if(responseObject.param.connectCount > 1 && responseObject.param.gamePlayingFlag == false) {
+      $( "#startBtn" ).attr("disabled", false);
+    }else {
+      $( "#startBtn" ).attr("disabled", true);
+    }
+
+    //Active/Deactive exit button
+    if(responseObject.param.gamePlayingFlag == false) {
+      $( "#exitBtn" ).attr("disabled", true);
+    }else {
+      $( "#exitBtn" ).attr("disabled", false);
+    }
+
+    //Active/Deactive turn button
+    console.log(responseObject.param.currentPlayerID);
+    if(user.id == responseObject.param.currentPlayerID && responseObject.param.gamePlayingFlag == true) {
+      $( "#turnBtn" ).attr("disabled", false);
+    }else {
+      $( "#turnBtn" ).attr("disabled", true);
+    }
+  },
+
+  processPrivateInfo: function(responseObject, user) {
+    console.log("private info received : " + responseObject);
+    user.id = responseObject.param.id;
+    user.registerYN = responseObject.param.registerYN;
+    user.use = responseObject.param.use;
+    user.own = responseObject.param.own;
+
+    $( "#own" ).html(JSON.stringify(user.own));
+    $( "#myInfo" ).html(UTIL.getMessage(MESSAGE.MSG_MY_INFO, user.id));
+  },
+
+  settingTile: function(id,obj,x,y) {
+    var tileHtml = "";
+      if(obj.isJoker) {
+        tileHtml = "<div class=\"card redips-drag\"><span class=\"jo_eye\"></span><span class=\"jo_eye\"></span><span class=\"jo_mouth circle\"></span></div>";
+      }else {
+        tileHtml = "<div class=\"card redips-drag\"><span class=\""+obj.color+" circle\">"+obj.score+"</span></div>";
+      }
+      
+      $(id+" tr:eq("+x+") td:eq("+y+")").html(tileHtml);
+  },
+
+  makeBoard: function(id,x,y){
+    var talbeHtml = "";
+
+      for(i=0; i<y; i++) {
+        talbeHtml += "<tr>";
+        for(j=0; j<x; j++) {
+          talbeHtml += "<td>";
+          talbeHtml += "</td>";
+        }
+        talbeHtml += "</tr>";
+      }
+
+      $(id).html(talbeHtml);
+  },
+
+  serializeTable: function(id) {
+    var tbl = $("table"+id+ " tr").map(function() {
+      return $(this).find('td').map(function() {
+        //console.log($(this).children("div"));
+        return $(this).html();
+      }).get();
+    }).get();
+
+    return tbl;
   }
 
-  //Active/Deactive turn button
-  console.log(responseObject.param.currentPlayerID);
-  if(user.id == responseObject.param.currentPlayerID && responseObject.param.gamePlayingFlag == true) {
-    $( "#turnBtn" ).attr("disabled", false);
-  }else {
-    $( "#turnBtn" ).attr("disabled", true);
-  }
-};
-
-Game.prototype.processPrivateInfo = function(responseObject, user) {
-  console.log("private info received : " + responseObject);
-  user.id = responseObject.param.id;
-  user.registerYN = responseObject.param.registerYN;
-  user.use = responseObject.param.use;
-  user.own = responseObject.param.own;
-
-  $( "#own" ).html(JSON.stringify(user.own));
-  $( "#myInfo" ).html(UTIL.getMessage(MESSAGE.MSG_MY_INFO, user.id));
 };

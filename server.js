@@ -110,7 +110,7 @@ webSocketServer.on("connection", function(ws) {
 
     function initUser(user) {
         console.log("websocket connection open");
-        webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_JOIN);
+        //webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_JOIN);
         webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
         webSocketServer.sendMessage(makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
     }
@@ -134,7 +134,7 @@ webSocketServer.on("connection", function(ws) {
 
         webSocketServer.broadcast(makeCommand(CMD.START));
         webSocketServer.broadcast(MESSAGE.MSG_START);
-        webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID));
+        //webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID));
         webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
 
         for(var idx in rummikub.users) {
@@ -163,7 +163,6 @@ webSocketServer.on("connection", function(ws) {
     }
 
     function processChat(message) {
-        //webSocketServer.broadcast(user.id + " : " + message);
         webSocketServer.broadcast(message);
     }
 
