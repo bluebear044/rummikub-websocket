@@ -44,19 +44,26 @@
 
         }else {
 
-          console.log(responseObject);
-          for(var idx in responseObject) {
-            //console.log(responseObject[idx]);
-          }
+          var tableObj = JSON.parse(responseObject)
 
-          for(var i=1; i<=15; i++) {
-
-            for(var j=1; j<=6; j++) {
-              //console.log(i*j);
+          for(var i=0; i<6; i++) {
+            for(var j=0; j<15; j++) {
+              Game.settingTileHtml("#gameBoard", "", i, j);
             }
-
           }
-          
+
+          for(var i=0; i<6; i++) {
+            for(var j=0; j<15; j++) {
+              var tile = tableObj[(i*15)+j];
+
+              if(tile != null) {
+                Game.settingTile("#gameBoard", tile, i, j);
+              }
+              
+            }
+          }
+
+          REDIPS.drag.init();          
 
         }
         

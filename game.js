@@ -1,6 +1,6 @@
-//var host = location.origin.replace(/^http/, 'ws')
+var host = location.origin.replace(/^http/, 'ws')
 //var host = "ws://desolate-wave-36629.herokuapp.com/";
-var host = "ws://127.0.0.1:5000";
+//var host = "ws://127.0.0.1:5000";
 
 var Game = {
 
@@ -97,7 +97,10 @@ var Game = {
       }else {
         tileHtml = "<div class=\"card redips-drag\"><span class=\""+obj.color+" circle\">"+obj.score+"</span></div>";
       }
-      
+      this.settingTileHtml(id,tileHtml,x,y);
+  },
+
+  settingTileHtml: function(id,tileHtml,x,y) {     
       $(id+" tr:eq("+x+") td:eq("+y+")").html(tileHtml);
   },
 
@@ -117,14 +120,32 @@ var Game = {
   },
 
   serializeTable: function(id) {
+
+    var tableObj = new Array();
+
     var tbl = $("table"+id+ " tr").map(function() {
       return $(this).find('td').map(function() {
-        //console.log($(this).children("div"));
-        return $(this).html();
+
+        if($(this).html() == "") {
+          tableObj.push(null);
+        } else {
+
+          if($(this).children("span").attr("class") == "jo_eye") {
+            var tile = new Tile("30", "red", true);
+            tableObj.push(tile);
+          }else {
+            var score = $(this).children("div").children("span").attr("class").replace(" circle","");
+            var color = $(this).children("div").children("span").html();
+            var isJoker = false;
+            var tile = new Tile(score, color, isJoker);
+            tableObj.push(tile);
+          }
+        }
+
       }).get();
     }).get();
 
-    return tbl;
+    return tableObj;
   }
 
 };
