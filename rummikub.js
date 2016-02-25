@@ -28,7 +28,7 @@ Rummikub.prototype.initializeTiles = function() {
 	}
 	// add joker tiles
 	this.tiles.push(new Tile('30', 'red', true));
-	this.tiles.push(new Tile('30', 'black', true));
+	this.tiles.push(new Tile('30', 'red', true));
 
 	this.shuffle(this.tiles);
 };

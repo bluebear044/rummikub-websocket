@@ -91,7 +91,7 @@ var Game = {
   },
 
   settingTile: function(id,obj,x,y) {
-    var tileHtml = "";
+      var tileHtml = "";
       if(obj.isJoker) {
         tileHtml = "<div class=\"card redips-drag\"><span class=\"jo_eye\"></span><span class=\"jo_eye\"></span><span class=\"jo_mouth circle\"></span></div>";
       }else {
@@ -100,7 +100,8 @@ var Game = {
       this.settingTileHtml(id,tileHtml,x,y);
   },
 
-  settingTileHtml: function(id,tileHtml,x,y) {     
+  settingTileHtml: function(id,tileHtml,x,y) {
+      console.log("draw html " + tileHtml);  
       $(id+" tr:eq("+x+") td:eq("+y+")").html(tileHtml);
   },
 
@@ -130,16 +131,16 @@ var Game = {
           tableObj.push(null);
         } else {
 
-          if($(this).children("span").attr("class") == "jo_eye") {
+          if($(this).children("div").children("span").html() == 30) {
             var tile = new Tile("30", "red", true);
             tableObj.push(tile);
           }else {
-            var score = $(this).children("div").children("span").attr("class").replace(" circle","");
-            var color = $(this).children("div").children("span").html();
-            var isJoker = false;
-            var tile = new Tile(score, color, isJoker);
+            var score = $(this).children("div").children("span").html();
+            var color = $(this).children("div").children("span").attr("class").replace(" circle","");
+            var tile = new Tile(score, color, false);
             tableObj.push(tile);
           }
+
         }
 
       }).get();
