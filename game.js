@@ -101,7 +101,7 @@ var Game = {
   },
 
   settingTileHtml: function(id,tileHtml,x,y) {
-      console.log("draw html " + tileHtml);  
+      //console.log("draw html " + tileHtml);  
       $(id+" tr:eq("+x+") td:eq("+y+")").html(tileHtml);
   },
 
@@ -131,7 +131,7 @@ var Game = {
           tableObj.push(null);
         } else {
 
-          if($(this).children("div").children("span").html() == 30) {
+          if($(this).children("div").children("span").html() == "") {
             var tile = new Tile("30", "red", true);
             tableObj.push(tile);
           }else {
@@ -147,6 +147,43 @@ var Game = {
     }).get();
 
     return tableObj;
+  },
+
+  introSetting: function() {
+      Game.settingTile("#gameBoard", new Tile("R", "red", false), 1, 3);
+      Game.settingTile("#gameBoard", new Tile("U", "red", false), 1, 4);
+      Game.settingTile("#gameBoard", new Tile("M", "red", false), 1, 5);
+      Game.settingTile("#gameBoard", new Tile("30", "red", true), 1, 6);
+      Game.settingTile("#gameBoard", new Tile("Y", "red", false), 1, 7);
+
+      Game.settingTile("#gameBoard", new Tile("C", "blue", false), 2, 7);
+      Game.settingTile("#gameBoard", new Tile("U", "yellow", false), 2, 8);
+      Game.settingTile("#gameBoard", new Tile("B", "black", false), 2, 9);
+      Game.settingTile("#gameBoard", new Tile("E", "red", false), 2, 10);
+  }
+
+};
+
+var Redips = {
+  initialize: function(ws) {
+    
+    REDIPS.drag.init();
+    REDIPS.drag.dropMode = 'single';
+
+    //REDIPS Dropped Event
+    REDIPS.drag.event.dropped = function () {
+      var boardSerializeMap = Game.serializeTable("#gameBoard");
+      //console.log(JSON.stringify(boardSerializeMap));
+      var requestObject = UTIL.makeCommand(CMD.SYNC, boardSerializeMap);
+
+      console.log("REQUEST CMD : " + requestObject.command);
+      console.log("REQUEST PARAM : " + requestObject.param);
+      ws.send(JSON.stringify(requestObject));
+    };
+  },
+
+  refresh: function() {
+    REDIPS.drag.init();
   }
 
 };

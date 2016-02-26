@@ -58,19 +58,24 @@ webSocketServer.on("connection", function(ws) {
     ws.on('message', function(message) {
        
         console.log("raw message : " + message);
-        
-        if(message == CMD.START) {
+        var responseObject = JSON.parse(message);
+  
+        if(responseObject.command == CMD.START) {
 
             processStart(user);
 
-        }else if(message == CMD.TURN) {
+        }else if(responseObject.command == CMD.TURN) {
 
             processTurn(user);
 
-        }else if(message == CMD.EXIT) {
+        }else if(responseObject.command == CMD.EXIT) {
 
             processExit();
-        
+
+        }else if(responseObject.command == CMD.SYNC) {
+            
+            processSync(responseObject.param);
+
         }else {
 
             processChat(message);
@@ -82,13 +87,6 @@ webSocketServer.on("connection", function(ws) {
     ws.on("close", function() {
         processDisconnect(user);
     })
-
-    function makeCommand(command, param) {
-        return { 
-            "command" : command, 
-            "param" : param
-        };
-    }
 
     function boardInfo() {
         return {
@@ -111,8 +109,8 @@ webSocketServer.on("connection", function(ws) {
     function initUser(user) {
         console.log("websocket connection open");
         //webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + user.id + MESSAGE.MSG_JOIN);
-        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
-        webSocketServer.sendMessage(makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
     }
 
     function processStart(user) {
@@ -132,13 +130,13 @@ webSocketServer.on("connection", function(ws) {
         console.log("rummikub.users : " + rummikub.users);
         currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
 
-        webSocketServer.broadcast(makeCommand(CMD.START));
+        webSocketServer.broadcast(UTIL.makeCommand(CMD.START));
         webSocketServer.broadcast(MESSAGE.MSG_START);
         //webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID));
-        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
         for(var idx in rummikub.users) {
-            webSocketServer.sendMessage(makeCommand( CMD.PRIVATE_INFO, userInfo(rummikub.users[idx]) ), rummikub.users[idx].id);
+            webSocketServer.sendMessage(UTIL.makeCommand( CMD.PRIVATE_INFO, userInfo(rummikub.users[idx]) ), rummikub.users[idx].id);
         }
 
     }
@@ -148,18 +146,22 @@ webSocketServer.on("connection", function(ws) {
         // select next turn player
         currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
 
-        webSocketServer.broadcast(makeCommand(CMD.TURN));
+        webSocketServer.broadcast(UTIL.makeCommand(CMD.TURN));
         webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_TURN, user.id));
         webSocketServer.broadcast(UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID));
-        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
     }
 
     function processExit() {
         gamePlayingFlag = false;
 
-        webSocketServer.broadcast(makeCommand(CMD.EXIT));
+        webSocketServer.broadcast(UTIL.makeCommand(CMD.EXIT));
         webSocketServer.broadcast(MESSAGE.MSG_EXIT);
-        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+    }
+
+    function processSync(param) {
+        webSocketServer.broadcast(UTIL.makeCommand(CMD.SYNC, param));
     }
 
     function processChat(message) {
@@ -182,7 +184,7 @@ webSocketServer.on("connection", function(ws) {
 
         webSocketServer.broadcast(UTIL.printNowDate() + "<br/>" + UTIL.getMessage(MESSAGE.MSG_DISCONNECT, user.id));
         webSocketServer.broadcast(MESSAGE.MSG_EXIT);
-        webSocketServer.broadcast(makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
     }
 
 })

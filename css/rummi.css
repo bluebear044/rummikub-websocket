@@ -44,3 +44,9 @@ tr + tr { border-top: 1px solid white; }
 #ownBoard {
   background-color:#575757;
 }
+
+.menu {
+  margin-left: 10px;
+  margin-bottom: 1px;
+
+}

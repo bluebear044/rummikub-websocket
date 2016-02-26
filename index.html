@@ -4,6 +4,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta charset="UTF-8">
 	<title>rummi</title>
+  <!-- Pure CSS -->
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
 	<!-- 초기화 -->
 	<link rel="stylesheet" type="text/css" href="./css/basic.css">
 	<!-- rummi css -->
@@ -18,7 +20,7 @@
 
       var ws = Game.webSocketConnect();
       ws.onmessage = function (event) {
-        //console.log("message received : " + event.data);
+        console.log("message received : " + event.data);
         var responseObject = JSON.parse(event.data);
 
         //Command Controller
@@ -42,9 +44,9 @@
 
           //game.processPrivateInfo(responseObject, user);
 
-        }else {
-
-          var tableObj = JSON.parse(responseObject)
+        }else if(responseObject.command == CMD.SYNC) {
+          
+          var tableObj = responseObject.param;
 
           for(var i=0; i<6; i++) {
             for(var j=0; j<15; j++) {
@@ -63,48 +65,38 @@
             }
           }
 
-          REDIPS.drag.init();          
+          Redips.refresh();  
+
+        }else {
+
+          //todo chat
 
         }
         
       }
 
+      //Initialize Board
       Game.makeBoard("#gameBoard", 15, 6);
       Game.makeBoard("#ownBoard", 15, 2);
 
-      //setting tiles
-      var tile1 = new Tile("1", "red", false);
-      Game.settingTile("#gameBoard", tile1, 1, 2);
-
-      var tile2 = new Tile("30", "red", true);
-      Game.settingTile("#gameBoard", tile2, 1, 3);
-
-      var tile3 = new Tile("3", "red", false);
-      Game.settingTile("#gameBoard", tile3, 1, 4);
-
-      var tile4 = new Tile("11", "blue", false);
-      Game.settingTile("#gameBoard", tile4, 2, 6);
-
-      var tile5 = new Tile("12", "yellow", false);
-      Game.settingTile("#gameBoard", tile5, 2, 8);
-
-      var tile6 = new Tile("5", "black", false);
-      Game.settingTile("#gameBoard", tile6, 2, 9);
+      //Setting Intro Tiles
+      Game.introSetting();
 
       //REDIPS Initialize
-      REDIPS.drag.init();
-      REDIPS.drag.dropMode = 'single';
-      REDIPS.drag.event.dropped = function () {
-        var boardSerializeMap = Game.serializeTable("#gameBoard");
-        //console.log(JSON.stringify(boardSerializeMap));
-        ws.send(JSON.stringify(boardSerializeMap));
-      };
+      Redips.initialize(ws);
 
 		});
 	</script>
 </head>
 <body>
 
+  <div class="menu">
+    <input id="name" type="text" placeholder="아이디">
+    <button type="submit" class="pure-button pure-button-primary">접속</button>
+    <button class="pure-button">게임시작</button>
+    <button class="pure-button">턴종료</button>
+  </div>
+  
   <div id="redips-drag">
     <div id="wrap">
 			<table class="board" id="gameBoard"></table>

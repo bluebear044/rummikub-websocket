@@ -1,5 +1,7 @@
 //constant
 var CMD = {
+	JOIN : "::JOIN::",
+	SYNC : "::SYNC::",
 	START : "::START::", 
 	TURN : "::TURN::", 
 	EXIT : "::EXIT::",
@@ -12,7 +14,7 @@ var MESSAGE = {
 	MSG_EXIT : "게임이 종료되었습니다.",
 	MSG_TURN : "{0} 님이 턴을 종료하였습니다.",
 	MSG_NEXT_TURN : "{0} 님 차례 입니다.",
-	MSG_JOIN : " 님이 입장하셨습니다.",
+	MSG_JOIN : "{0} 님이 입장하셨습니다.",
 	MSG_DISCONNECT : "{0} 님이 나가셨습니다.",
 	MSG_CLIENT_COUNT : "현재 {0}명 접속중",
 	MSG_TURN_COUNT : "{0}번째 턴",
@@ -22,6 +24,14 @@ var MESSAGE = {
 };
 
 var UTIL = {
+
+	makeCommand: function(command, param) {
+        return { 
+            "command" : command, 
+            "param" : param
+        };
+    },
+
 	getMessage: function(msg, param) {
 
 		if(param != null) {
