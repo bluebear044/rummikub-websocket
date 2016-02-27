@@ -23,9 +23,13 @@ var Game = {
 
           Game.processStart(responseObject.param);
 
+        }else if(responseObject.command == CMD.REFRESH) {
+
+          Game.processRefresh(responseObject.param);
+
         }else if(responseObject.command == CMD.TURN) {
 
-          //game.processTurn(responseObject);
+          //Game.processTurn(responseObject.param);
 
         }else if(responseObject.command == CMD.EXIT) {
 
@@ -123,15 +127,15 @@ var Game = {
 
   },
 
-  /*
-  processTurn: function(responseObject) {
-    //TODO
-    //responseObject를 통해 전달받은 board 타일정보 및 새롭게 전달받은 타일정보를 반영한다.
-    $( "#board" ).html("Game View");
+  processRefresh: function(param) {
+    Redips.refresh();
   },
-  */
 
-  processExit: function(responseObject) {
+  processTurn: function(param) {
+    //todo
+  },
+
+  processExit: function() {
 
       Game.clearBoard("#gameBoard");
       Game.clearBoard("#ownBoard");
@@ -196,7 +200,6 @@ var Game = {
       }
     }
 
-    //Redips.refresh();
   },
 
   processChat: function(message) {

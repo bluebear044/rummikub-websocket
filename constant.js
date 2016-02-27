@@ -13,7 +13,8 @@ var CMD = {
 	TURN : "::TURN::", 
 	EXIT : "::EXIT::",
 	INFO : "::INFO::",
-	PRIVATE_INFO : "::PRIVATE_INFO::"
+	PRIVATE_INFO : "::PRIVATE_INFO::",
+	REFRESH : "::REFRESH::"
 };
 
 var MESSAGE = {

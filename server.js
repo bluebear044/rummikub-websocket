@@ -146,10 +146,11 @@ webSocketServer.on("connection", function(ws) {
         // select next turn player
         currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
 
+        //todo
         //현재 올려져 있는 보드의 타일이 규칙에 맞는 지 확인하는 로직
         //특정 사용자의 ownBoard의 타일이 모두 없어졌는지 확인하는 로
         //특정 사용자에게 벌칙으로 1타일 혹은 3타일 가져가는 로직
-        //webSocketServer.broadcast(UTIL.makeCommand( CMD.TURN ));
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH, userInfo(user) ), user.id);
         
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_TURN, user.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID) ));
@@ -166,6 +167,7 @@ webSocketServer.on("connection", function(ws) {
 
     function processSync(param) {
         webSocketServer.broadcast(UTIL.makeCommand(CMD.SYNC, param));
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH, userInfo(user) ), user.id);
     }
 
     function processChat(message) {
