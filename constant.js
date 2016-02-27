@@ -1,5 +1,12 @@
 //constant
+var BOARD = {
+	WIDTH : 15,
+	HEIGHT : 6,
+	OWN_HEIGHT : 2
+}
+
 var CMD = {
+	CHAT : "::CHAT::",
 	JOIN : "::JOIN::",
 	SYNC : "::SYNC::",
 	START : "::START::", 
@@ -16,7 +23,7 @@ var MESSAGE = {
 	MSG_NEXT_TURN : "{0} 님 차례 입니다.",
 	MSG_JOIN : "{0} 님이 입장하셨습니다.",
 	MSG_DISCONNECT : "{0} 님이 나가셨습니다.",
-	MSG_CLIENT_COUNT : "현재 {0}명 접속중",
+	MSG_CLIENT_COUNT : "{0}명 접속중",
 	MSG_TURN_COUNT : "{0}번째 턴",
 	MSG_GAME_READY : "현재 게임 준비중",
 	MSG_GAME_PLAYING : "현재 게임 진행중",

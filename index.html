@@ -17,84 +17,23 @@
   <script type="text/javascript" src="./game.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-
-      var ws = Game.webSocketConnect();
-      ws.onmessage = function (event) {
-        console.log("message received : " + event.data);
-        var responseObject = JSON.parse(event.data);
-
-        //Command Controller
-        if(responseObject.command == CMD.START) {
-
-          //game.processStart(responseObject);
-
-        }else if(responseObject.command == CMD.TURN) {
-
-          //game.processTurn(responseObject);
-
-        }else if(responseObject.command == CMD.EXIT) {
-
-          //game.processExit(responseObject);
-
-        }else if(responseObject.command == CMD.INFO) {
-
-          //game.processInfo(responseObject, user);
-
-        }else if(responseObject.command == CMD.PRIVATE_INFO) {
-
-          //game.processPrivateInfo(responseObject, user);
-
-        }else if(responseObject.command == CMD.SYNC) {
-          
-          var tableObj = responseObject.param;
-
-          for(var i=0; i<6; i++) {
-            for(var j=0; j<15; j++) {
-              Game.settingTileHtml("#gameBoard", "", i, j);
-            }
-          }
-
-          for(var i=0; i<6; i++) {
-            for(var j=0; j<15; j++) {
-              var tile = tableObj[(i*15)+j];
-
-              if(tile != null) {
-                Game.settingTile("#gameBoard", tile, i, j);
-              }
-              
-            }
-          }
-
-          Redips.refresh();  
-
-        }else {
-
-          //todo chat
-
-        }
-        
-      }
-
-      //Initialize Board
-      Game.makeBoard("#gameBoard", 15, 6);
-      Game.makeBoard("#ownBoard", 15, 2);
-
-      //Setting Intro Tiles
-      Game.introSetting();
-
-      //REDIPS Initialize
-      Redips.initialize(ws);
-
+      Game.registerButtonEvent();
+      Game.main();
 		});
 	</script>
 </head>
 <body>
 
   <div class="menu">
-    <input id="name" type="text" placeholder="아이디">
-    <button type="submit" class="pure-button pure-button-primary">접속</button>
-    <button class="pure-button">게임시작</button>
-    <button class="pure-button">턴종료</button>
+    <span class="info">
+      <span id="myInfo"></span>
+      <span id="gamePlaying"></span>
+      <span id="turnCount"></span>
+      <span id="connectCount"></span>
+    </span>
+    <button type="submit" class="pure-button pure-button-primary" id="startBtn">게임시작</button>
+    <button type="submit" class="pure-button pure-button-primary" id="turnBtn">턴종료</button>
+    <button class="pure-button" id="messageBtn">메시지창</button>
   </div>
   
   <div id="redips-drag">
@@ -103,6 +42,14 @@
 			<table class="board" id="ownBoard"></table>
 		</div>
 	</div>
+
+  <div class="fixed" id="floatingMessage">
+    <div class="messageBox" id="messages"></div>
+    <div class="sendBox">
+      <input id="msg" type="text" placeholder="메시지">
+      <button class="pure-button" id="sendBtn">전송</button>
+    </div>
+  </div>
 
 </body>
 </html>

@@ -1,8 +1,97 @@
 var host = location.origin.replace(/^http/, 'ws')
 //var host = "ws://desolate-wave-36629.herokuapp.com/";
 //var host = "ws://127.0.0.1:5000";
+var ws;
+var user={};
 
 var Game = {
+
+  main: function() {
+      ws = Game.webSocketConnect();
+      ws.onmessage = function (event) {
+
+        var responseObject = JSON.parse(event.data);
+        console.log("============================================");
+        console.log("=             Message Received             =");
+        console.log("============================================");
+        console.log("Command : " + responseObject.command);
+        console.log("Param : " + responseObject.param);
+        console.log("============================================");
+
+        //Command Controller
+        if(responseObject.command == CMD.START) {
+
+          Game.processStart(responseObject.param);
+
+        }else if(responseObject.command == CMD.TURN) {
+
+          //game.processTurn(responseObject);
+
+        }else if(responseObject.command == CMD.EXIT) {
+
+          Game.processExit();
+
+        }else if(responseObject.command == CMD.INFO) {
+
+          Game.processInfo(responseObject.param);
+
+        }else if(responseObject.command == CMD.PRIVATE_INFO) {
+
+          Game.processPrivateInfo(responseObject.param);
+
+        }else if(responseObject.command == CMD.SYNC) {
+
+          Game.processSync(responseObject.param);
+
+        }else if(responseObject.command == CMD.CHAT) {
+
+          Game.processChat(responseObject.param);
+
+        }else {
+          // nothing happen
+        }
+        
+      }
+
+      //Initialize Board
+      Game.makeBoard("#gameBoard", BOARD.WIDTH, BOARD.HEIGHT);
+      Game.makeBoard("#ownBoard", BOARD.WIDTH, BOARD.OWN_HEIGHT);
+
+      //Setting Intro Tiles
+      Game.introBoard();
+
+      //REDIPS Initialize
+      Redips.initialize();
+
+  },
+
+  registerButtonEvent: function() {
+
+    $( "#sendBtn" ).click(function() {
+      Game.sendMessage(ws);
+    });    
+
+    $( "#messageBtn" ).click(function() {
+      $( "#floatingMessage" ).toggle();
+    });
+
+    //keyboard
+    $( "#msg" ).keypress(function(e) {
+      if(e.keyCode == 13) {
+        Game.sendMessage(ws);
+      }
+    });
+
+    $( "#startBtn" ).click(function() {
+      Game.startGame(ws);
+    });
+
+    $( "#turnBtn" ).click(function() {
+      Game.nextTurn(ws);
+    });
+    $( "#turnBtn" ).attr("disabled", true);
+
+  },
 
   webSocketConnect: function() {
     //Websocket Instance
@@ -10,84 +99,108 @@ var Game = {
   },
 
   sendMessage: function(ws) {
-      var msg = $( "#msg" ).val();
-      console.log(msg);
-      ws.send(msg);
+      var messageValue = $( "#msg" ).val();
+      ws.send(JSON.stringify( UTIL.makeCommand( CMD.CHAT, messageValue) ));
       $( "#msg" ).val("");
   },
 
   startGame: function(ws) {
-      console.log("start game!!");
-      ws.send(CMD.START);
+      ws.send(JSON.stringify( UTIL.makeCommand(CMD.START) ));
   },
 
   nextTurn: function(ws) {
-      console.log("nextTurn!!");
-      ws.send(CMD.TURN);
+      ws.send(JSON.stringify( UTIL.makeCommand(CMD.TURN) ));
   },
 
-  exitGame: function(ws) {
-      console.log("exit game!!");
-      ws.send(CMD.EXIT);
+  processStart: function(param) {
+
+    Game.clearBoard("#gameBoard");
+    for(var idx in param.own) {
+      var i = Math.floor(idx/BOARD.WIDTH);
+      var j = idx%BOARD.WIDTH;
+      Game.settingTile("#ownBoard", param.own[idx], i, j);
+    }
+
   },
 
-  processStart: function(responseObject) {
-    $( "#exitBtn" ).attr("disabled", false);
-  },
-
+  /*
   processTurn: function(responseObject) {
     //TODO
     //responseObject를 통해 전달받은 board 타일정보 및 새롭게 전달받은 타일정보를 반영한다.
     $( "#board" ).html("Game View");
   },
+  */
 
   processExit: function(responseObject) {
-    $( "#board" ).empty();
+
+      Game.clearBoard("#gameBoard");
+      Game.clearBoard("#ownBoard");
+      Game.introBoard();
+      $( "#turnBtn" ).attr("disabled", true);
+
   },
 
-  processInfo: function(responseObject, user) {
-    $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, responseObject.param.connectCount));
+  processInfo: function(param) {
+    $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, param.connectCount));
 
-    if(responseObject.param.gamePlayingFlag == true ) {
+    if(param.gamePlayingFlag == true ) {
       $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
-      $( "#turnCount" ).html(UTIL.getMessage(MESSAGE.MSG_TURN_COUNT, responseObject.param.turnCount));
+      $( "#turnCount" ).html(UTIL.getMessage(MESSAGE.MSG_TURN_COUNT, param.turnCount));
     }else {
       $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_READY);
       $( "#turnCount" ).empty();
     }
 
     //Active/Deactive start button
-    if(responseObject.param.connectCount > 1 && responseObject.param.gamePlayingFlag == false) {
+    if(param.connectCount > 1 && param.gamePlayingFlag == false) {
       $( "#startBtn" ).attr("disabled", false);
     }else {
       $( "#startBtn" ).attr("disabled", true);
     }
 
-    //Active/Deactive exit button
-    if(responseObject.param.gamePlayingFlag == false) {
-      $( "#exitBtn" ).attr("disabled", true);
-    }else {
-      $( "#exitBtn" ).attr("disabled", false);
+    if(param.gamePlayingFlag == true ) {
+      //Active/Deactive turn button
+      console.log(param.currentPlayerID);
+      if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
+        $( "#turnBtn" ).attr("disabled", false);
+        Redips.refresh();
+      }else {
+        $( "#turnBtn" ).attr("disabled", true);
+      }
     }
 
-    //Active/Deactive turn button
-    console.log(responseObject.param.currentPlayerID);
-    if(user.id == responseObject.param.currentPlayerID && responseObject.param.gamePlayingFlag == true) {
-      $( "#turnBtn" ).attr("disabled", false);
-    }else {
-      $( "#turnBtn" ).attr("disabled", true);
-    }
   },
 
-  processPrivateInfo: function(responseObject, user) {
-    console.log("private info received : " + responseObject);
-    user.id = responseObject.param.id;
-    user.registerYN = responseObject.param.registerYN;
-    user.use = responseObject.param.use;
-    user.own = responseObject.param.own;
+  processPrivateInfo: function(param) {
+    user.id = param.id;
+    user.registerYN = param.registerYN;
+    user.use = param.use;
+    user.own = param.own;
 
-    $( "#own" ).html(JSON.stringify(user.own));
     $( "#myInfo" ).html(UTIL.getMessage(MESSAGE.MSG_MY_INFO, user.id));
+
+  },
+
+  processSync: function(param) {
+
+    Game.clearBoard("#gameBoard");
+
+    for(var i=0; i<BOARD.HEIGHT; i++) {
+      for(var j=0; j<BOARD.WIDTH; j++) {
+        var tile = param[(i*BOARD.WIDTH)+j];
+
+        if(tile != null) {
+          Game.settingTile("#gameBoard", tile, i, j);
+        }
+        
+      }
+    }
+
+    //Redips.refresh();
+  },
+
+  processChat: function(message) {
+    $("#messages").append("<p>"+message+"</p>");
   },
 
   settingTile: function(id,obj,x,y) {
@@ -100,8 +213,7 @@ var Game = {
       this.settingTileHtml(id,tileHtml,x,y);
   },
 
-  settingTileHtml: function(id,tileHtml,x,y) {
-      //console.log("draw html " + tileHtml);  
+  settingTileHtml: function(id,tileHtml,x,y) { 
       $(id+" tr:eq("+x+") td:eq("+y+")").html(tileHtml);
   },
 
@@ -149,7 +261,7 @@ var Game = {
     return tableObj;
   },
 
-  introSetting: function() {
+  introBoard: function() {
       Game.settingTile("#gameBoard", new Tile("R", "red", false), 1, 3);
       Game.settingTile("#gameBoard", new Tile("U", "red", false), 1, 4);
       Game.settingTile("#gameBoard", new Tile("M", "red", false), 1, 5);
@@ -160,14 +272,24 @@ var Game = {
       Game.settingTile("#gameBoard", new Tile("U", "yellow", false), 2, 8);
       Game.settingTile("#gameBoard", new Tile("B", "black", false), 2, 9);
       Game.settingTile("#gameBoard", new Tile("E", "red", false), 2, 10);
+  },
+
+  clearBoard: function(id) {
+
+    for(var i=0; i<BOARD.HEIGHT; i++) {
+      for(var j=0; j<BOARD.WIDTH; j++) {
+        Game.settingTileHtml(id, "", i, j);
+      }
+    }
+
   }
 
 };
 
 var Redips = {
-  initialize: function(ws) {
+  initialize: function() {
     
-    REDIPS.drag.init();
+    //REDIPS.drag.init(); //처음부터 블럭 움직이지 못하도록 초기화 하지 않음
     REDIPS.drag.dropMode = 'single';
 
     //REDIPS Dropped Event
