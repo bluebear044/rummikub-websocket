@@ -18,17 +18,6 @@ span.jo_mouth {width: 30px; height: 30px; border-radius: 50%; box-shadow: 4px 4p
   -o-transform: rotate(45deg);
      transform: rotate(45deg);}
 
-.board {
-   border: 1px solid white;
-   table-layout:fixed;
-   background:
-   radial-gradient(black 15%, transparent 16%) 0 0,
-   radial-gradient(black 15%, transparent 16%) 8px 8px,
-   radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
-   radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
-   background-size:16px 16px;
-   /*border-style: hidden;*/
-}
 td {
 	width: 50px;
   height: 80px;
@@ -39,9 +28,25 @@ th + th { border-left: 1px solid white; }
 tr + tr { border-top: 1px solid white; }
 */
 #gameBoard {
+  border: 1px solid white;
+  table-layout:fixed;
+  background:
+  radial-gradient(black 15%, transparent 16%) 0 0,
+  radial-gradient(black 15%, transparent 16%) 8px 8px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+  background-size:16px 16px;
   background-color:#282828;
 }
 #ownBoard {
+  border: 1px solid white;
+  table-layout:fixed;
+  background:
+  radial-gradient(black 15%, transparent 16%) 0 0,
+  radial-gradient(black 15%, transparent 16%) 8px 8px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+  background-size:16px 16px;
   background-color:#575757;
 }
 

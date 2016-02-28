@@ -1,6 +1,6 @@
-//var host = location.origin.replace(/^http/, 'ws')
+var host = location.origin.replace(/^http/, 'ws')
 //var host = "ws://desolate-wave-36629.herokuapp.com/";
-var host = "ws://127.0.0.1:5000";
+//var host = "ws://127.0.0.1:5000";
 var ws;
 var user={};
 
@@ -18,10 +18,6 @@ var Game = {
         if(responseObject.command == CMD.START) {
 
           Game.processStart(responseObject.param);
-
-        }else if(responseObject.command == CMD.REFRESH) {
-
-          Game.processRefresh(responseObject.param);
 
         }else if(responseObject.command == CMD.TURN) {
 
@@ -126,10 +122,6 @@ var Game = {
 
   },
 
-  processRefresh: function(param) {
-    Redips.refresh();
-  },
-
   processTurn: function(param) {
     //todo
   },
@@ -165,8 +157,12 @@ var Game = {
       //Active/Deactive turn button
       if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
         $( "#turnBtn" ).attr("disabled", false);
+        Redips.enableDrag("gameBoard",true);
+        Redips.enableDrag("ownBoard",true);
       }else {
         $( "#turnBtn" ).attr("disabled", true);
+        Redips.enableDrag("gameBoard",false);
+        Redips.enableDrag("ownBoard",false);
       }
     }
 
@@ -304,14 +300,14 @@ var Redips = {
     };
   },
 
-  refresh: function() {
+  enableDrag: function(cssName, isEnable) {
     REDIPS.drag.init();
 
     // make it a unmovable
     //REDIPS.drag.enableDrag(false, rd.obj);
 
     // disable tables with class name 'mini'
-    //enableTable(false, 'mini');
+    REDIPS.drag.enableTable(isEnable, cssName);
   }
 
 };

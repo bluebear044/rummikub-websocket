@@ -14,8 +14,7 @@ var CMD = {
 	TURN : "::TURN::", 
 	EXIT : "::EXIT::",
 	INFO : "::INFO::",
-	PRIVATE_INFO : "::PRIVATE_INFO::",
-	REFRESH : "::REFRESH::"
+	PRIVATE_INFO : "::PRIVATE_INFO::"
 };
 
 var MESSAGE = {

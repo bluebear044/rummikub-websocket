@@ -129,8 +129,6 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
-        //webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
-
     }
 
     function processTurn(user) {
@@ -147,8 +145,6 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
-        //webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
-
     }
 
     function processExit() {
@@ -160,7 +156,8 @@ webSocketServer.on("connection", function(ws) {
     }
 
     function processSync(param) {
-        webSocketServer.broadcast(UTIL.makeCommand(CMD.SYNC, param));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.SYNC, param ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
     }
 
     function processChat(message) {
