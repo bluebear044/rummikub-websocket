@@ -1,6 +1,6 @@
-var host = location.origin.replace(/^http/, 'ws')
+//var host = location.origin.replace(/^http/, 'ws')
 //var host = "ws://desolate-wave-36629.herokuapp.com/";
-//var host = "ws://127.0.0.1:5000";
+var host = "ws://127.0.0.1:5000";
 var ws;
 var user={};
 
@@ -11,12 +11,8 @@ var Game = {
       ws.onmessage = function (event) {
 
         var responseObject = JSON.parse(event.data);
-        console.log("============================================");
-        console.log("=             Message Received             =");
-        console.log("============================================");
-        console.log("Command : " + responseObject.command);
-        console.log("Param : " + responseObject.param);
-        console.log("============================================");
+
+        console.log("[Message Received] Command : " + responseObject.command + " Param : " + responseObject.param);
 
         //Command Controller
         if(responseObject.command == CMD.START) {
@@ -57,9 +53,12 @@ var Game = {
         
       }
 
+      //Button Event Register
+      Game.registerButtonEvent();
+
       //Initialize Board
       Game.makeBoard("#gameBoard", BOARD.WIDTH, BOARD.HEIGHT);
-      Game.makeBoard("#ownBoard", BOARD.WIDTH, BOARD.OWN_HEIGHT);
+      Game.makeBoard("#ownBoard", BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
 
       //Setting Intro Tiles
       Game.introBoard();
@@ -164,7 +163,6 @@ var Game = {
 
     if(param.gamePlayingFlag == true ) {
       //Active/Deactive turn button
-      console.log(param.currentPlayerID);
       if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
         $( "#turnBtn" ).attr("disabled", false);
         Redips.refresh();
@@ -309,6 +307,12 @@ var Redips = {
 
   refresh: function() {
     REDIPS.drag.init();
+
+    // make it a unmovable
+    //REDIPS.drag.enableDrag(false, rd.obj);
+
+    // disable tables with class name 'mini'
+    //enableTable(false, 'mini');
   }
 
 };

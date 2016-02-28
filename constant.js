@@ -2,6 +2,7 @@
 var BOARD = {
 	WIDTH : 15,
 	HEIGHT : 6,
+	OWN_WIDTH : 15,
 	OWN_HEIGHT : 2
 }
 

@@ -24,11 +24,11 @@ var rummikub = new Rummikub();
 var connectCount = 0;
 var gamePlayingFlag = false;
 var turnCount = 1;
-var currentPlayerID;
+var currentPlayer = {};
 
 //broadcast client
 webSocketServer.broadcast = function(data) {
-    console.log("broadcast msg : " + JSON.stringify(data));
+    console.log("[broadcast msg]=" + JSON.stringify(data));
     for (var i in rummikub.users) {
         rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
     }
@@ -36,7 +36,7 @@ webSocketServer.broadcast = function(data) {
 
 //send specific client
 webSocketServer.sendMessage = function(data, id) {
-    console.log("send msg : " + JSON.stringify(data) + " --> " + id);
+    console.log("[send msg -> " + id + "]=" + JSON.stringify(data));
     for (var i in rummikub.users) {
         if(id == rummikub.users[i].id) {
             rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
@@ -58,13 +58,8 @@ webSocketServer.on("connection", function(ws) {
 
         var requestObject = JSON.parse(message);
 
-        console.log("============================================");
-        console.log("=             Message Received             =");
-        console.log("============================================");
-        console.log("Command : " + requestObject.command);
-        console.log("Param : " + requestObject.param);
-        console.log("============================================");
-
+        console.log("[Message Received] Command : " + requestObject.command + " Param : " + requestObject.param);
+        
         if(requestObject.command == CMD.START) {
 
             processStart(user);
@@ -96,7 +91,7 @@ webSocketServer.on("connection", function(ws) {
             "connectCount" : connectCount, 
             "gamePlayingFlag" : gamePlayingFlag, 
             "turnCount" : turnCount, 
-            "currentPlayerID" : currentPlayerID
+            "currentPlayerID" : currentPlayer.id
         };
     }
 
@@ -119,16 +114,11 @@ webSocketServer.on("connection", function(ws) {
 
         gamePlayingFlag = true;
         rummikub.initializeGame();
-        console.log("============================================");
-        console.log("=               GAME SETTING               =");
-        console.log("============================================");
 
         // select next turn player
-        console.log("turnCount : " + turnCount);
-        console.log("rummikub.users.length : " + rummikub.users.length);
-        console.log("turnCount % rummikub.users.length : " + turnCount % rummikub.users.length);
-        console.log("rummikub.users : " + rummikub.users);
-        currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
+        //console.log("turnCount % rummikub.users.length : " + turnCount % rummikub.users.length);
+        //console.log("rummikub.users : " + rummikub.users);
+        currentPlayer = rummikub.users[turnCount % rummikub.users.length];
 
         for(var idx in rummikub.users) {
             webSocketServer.sendMessage(UTIL.makeCommand( CMD.START, userInfo(rummikub.users[idx]) ), rummikub.users[idx].id);
@@ -136,25 +126,29 @@ webSocketServer.on("connection", function(ws) {
         }
 
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, MESSAGE.MSG_START) );
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID) ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
 
     }
 
     function processTurn(user) {
         turnCount++;
         // select next turn player
-        currentPlayerID = rummikub.users[turnCount % rummikub.users.length].id;
+        currentPlayer = rummikub.users[turnCount % rummikub.users.length];
 
         //todo
         //현재 올려져 있는 보드의 타일이 규칙에 맞는 지 확인하는 로직
         //특정 사용자의 ownBoard의 타일이 모두 없어졌는지 확인하는 로
         //특정 사용자에게 벌칙으로 1타일 혹은 3타일 가져가는 로직
-        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH, userInfo(user) ), user.id);
         
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_TURN, user.id) ));
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayerID) ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
+
     }
 
     function processExit() {
@@ -167,7 +161,6 @@ webSocketServer.on("connection", function(ws) {
 
     function processSync(param) {
         webSocketServer.broadcast(UTIL.makeCommand(CMD.SYNC, param));
-        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH, userInfo(user) ), user.id);
     }
 
     function processChat(message) {
@@ -178,10 +171,7 @@ webSocketServer.on("connection", function(ws) {
         console.log("websocket connection close");
 
         //client & connect count delete        
-        console.log("remove id : " + user.id);
-        console.log("before : " + rummikub.users);
         rummikub.removeUser(user.id);
-        console.log("after : " + rummikub.users);
         connectCount--;
         turnCount = 1;
 
