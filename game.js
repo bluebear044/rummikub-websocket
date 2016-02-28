@@ -1,6 +1,17 @@
-var host = location.origin.replace(/^http/, 'ws')
-//var host = "ws://desolate-wave-36629.herokuapp.com/";
-//var host = "ws://127.0.0.1:5000";
+var host;
+switch(window.location.protocol) {
+   case 'http:':
+   case 'https:':
+     host = location.origin.replace(/^http/, 'ws');
+     //host = "ws://desolate-wave-36629.herokuapp.com/";
+     break;
+   case 'file:':
+     host = "ws://127.0.0.1:5000";
+     break;
+   default:
+     host = "ws://127.0.0.1:5000";
+}
+
 var ws;
 var user={};
 
