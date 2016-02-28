@@ -32,7 +32,7 @@ var Game = {
 
         }else if(responseObject.command == CMD.TURN) {
 
-          //Game.processTurn(responseObject.param);
+          Game.processTurn(responseObject.param);
 
         }else if(responseObject.command == CMD.EXIT) {
 
@@ -135,6 +135,9 @@ var Game = {
 
   processTurn: function(param) {
     //todo
+    //turn종료 당시의 gameBoard에 있는 블럭은 ownBoard로 못 옮기도록 셋팅하기
+    console.log("TODO!!!");
+
   },
 
   processExit: function() {
@@ -269,16 +272,16 @@ var Game = {
   },
 
   introBoard: function() {
-      Game.settingTile("#gameBoard", new Tile("R", "red", false), 1, 3);
-      Game.settingTile("#gameBoard", new Tile("U", "red", false), 1, 4);
-      Game.settingTile("#gameBoard", new Tile("M", "red", false), 1, 5);
-      Game.settingTile("#gameBoard", new Tile("30", "red", true), 1, 6);
-      Game.settingTile("#gameBoard", new Tile("Y", "red", false), 1, 7);
+      Game.settingTile("#gameBoard", new Tile("R", "red", false), 1, 4);
+      Game.settingTile("#gameBoard", new Tile("U", "red", false), 1, 5);
+      Game.settingTile("#gameBoard", new Tile("M", "red", false), 1, 6);
+      Game.settingTile("#gameBoard", new Tile("30", "red", true), 1, 7);
+      Game.settingTile("#gameBoard", new Tile("Y", "red", false), 1, 8);
 
-      Game.settingTile("#gameBoard", new Tile("C", "blue", false), 2, 7);
-      Game.settingTile("#gameBoard", new Tile("U", "yellow", false), 2, 8);
-      Game.settingTile("#gameBoard", new Tile("B", "black", false), 2, 9);
-      Game.settingTile("#gameBoard", new Tile("E", "red", false), 2, 10);
+      Game.settingTile("#gameBoard", new Tile("C", "blue", false), 2, 8);
+      Game.settingTile("#gameBoard", new Tile("U", "yellow", false), 2, 9);
+      Game.settingTile("#gameBoard", new Tile("B", "black", false), 2, 10);
+      Game.settingTile("#gameBoard", new Tile("E", "red", false), 2, 11);
   },
 
   clearBoard: function(id) {
@@ -313,11 +316,6 @@ var Redips = {
 
   enableDrag: function(cssName, isEnable) {
     REDIPS.drag.init();
-
-    // make it a unmovable
-    //REDIPS.drag.enableDrag(false, rd.obj);
-
-    // disable tables with class name 'mini'
     REDIPS.drag.enableTable(isEnable, cssName);
   }
 

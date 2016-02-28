@@ -1,8 +1,8 @@
 //constant
 var BOARD = {
-	WIDTH : 15,
+	WIDTH : 17,
 	HEIGHT : 6,
-	OWN_WIDTH : 15,
+	OWN_WIDTH : 17,
 	OWN_HEIGHT : 2
 }
 

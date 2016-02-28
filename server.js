@@ -140,6 +140,9 @@ webSocketServer.on("connection", function(ws) {
         //현재 올려져 있는 보드의 타일이 규칙에 맞는 지 확인하는 로직
         //특정 사용자의 ownBoard의 타일이 모두 없어졌는지 확인하는 로
         //특정 사용자에게 벌칙으로 1타일 혹은 3타일 가져가는 로직
+        //turn종료 당시의 gameBoard에 있는 블럭은 ownBoard로 못 옮기도록 셋팅하도록 호출하기
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.TURN ));
+
         
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_TURN, user.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
