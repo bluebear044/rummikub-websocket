@@ -165,7 +165,6 @@ var Game = {
       //Active/Deactive turn button
       if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
         $( "#turnBtn" ).attr("disabled", false);
-        Redips.refresh();
       }else {
         $( "#turnBtn" ).attr("disabled", true);
       }

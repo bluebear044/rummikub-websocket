@@ -129,7 +129,7 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
-        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
+        //webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
 
     }
 
@@ -147,7 +147,7 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
-        webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
+        //webSocketServer.sendMessage(UTIL.makeCommand( CMD.REFRESH ), currentPlayer.id);
 
     }
 
