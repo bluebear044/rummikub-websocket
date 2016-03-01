@@ -47,7 +47,7 @@ webSocketServer.sendMessage = function(data, id) {
 //connect client
 webSocketServer.on("connection", function(ws) {
 
-    var user = new User("GUEST_" + UTIL.random4digit(), ws);
+    var user = new User("GUEST_" + UTIL.random4digit());
     rummikub.users.push(user);
     connectCount++;
 

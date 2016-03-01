@@ -70,8 +70,7 @@ Rummikub.prototype.penaltyTile = function(numberOfPenaltyTile) {
 };
 
 //User class
-function User (id, ownWebsocket) {
-	this.ownWebsocket = ownWebsocket; // each users websocket
+function User (id) {
 	this.id = id;
 	this.registerYN = false;
 	this.use = [];
