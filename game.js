@@ -342,16 +342,21 @@ var Game = {
   },
 
   introBoard: function() {
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("R", "red", false), 1, 4);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "red", false), 1, 5);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("M", "red", false), 1, 6);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("30", "red", true), 1, 7);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("Y", "red", false), 1, 8);
 
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("C", "blue", false), 2, 8);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "yellow", false), 2, 9);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("B", "black", false), 2, 10);
-      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("E", "red", false), 2, 11);
+      //기준좌표
+      var standX = Number(1);
+      var standY = Number(6);
+
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("R", "red", false), standX, standY);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "red", false), standX, standY+1);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("M", "red", false), standX, standY+2);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("30", "red", true), standX, standY+3);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("Y", "red", false), standX, standY+4);
+
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("C", "blue", false), standX+1, standY+4);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "yellow", false), standX+1, standY+5);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("B", "black", false), standX+1, standY+6);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("E", "red", false), standX+1, standY+7);
   },
 
   clearBoard: function(id) {

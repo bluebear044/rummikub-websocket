@@ -149,6 +149,10 @@ User.prototype.validateTile = function() {
 };
 
 User.prototype.validateRegisterTile = function() {
+
+	if(this.use.length < 3) {
+		return false
+	}
 	
 	var sumOfScore = 0;
 	for(var idx in this.use) {
