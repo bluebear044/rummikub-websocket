@@ -54,6 +54,26 @@ Rummikub.prototype.removeUser = function(id) {
 	this.users.splice(removeIndex,1);
 };
 
+Rummikub.prototype.penaltyOneTile = function() {
+
+	var penaltyTile = [];
+	for(var idx=0; idx < 1; idx++) {
+  		penaltyTile[idx] = this.tiles.pop();
+	}
+
+	return penaltyTile;
+};
+
+Rummikub.prototype.penaltyThreeTile = function() {
+
+	var penaltyTile = [];
+	for(var idx=0; idx < 3; idx++) {
+  		penaltyTile[idx] = this.tiles.pop();
+	}
+
+	return penaltyTile;
+};
+
 //User class
 function User (id, ownWebsocket) {
 	this.ownWebsocket = ownWebsocket; // each users websocket
@@ -63,7 +83,88 @@ function User (id, ownWebsocket) {
 	this.own = [];
 }
 
-User.prototype.toString = function(id) {
+User.prototype.addUseTile = function(tile) {
+	this.use.push(tile);
+};
+
+User.prototype.removeOwnTile = function(tile) {
+
+	var removeIndex;
+
+	for(var idx in this.own) {
+		if(	tile.score == this.own[idx].score &&
+			tile.color == this.own[idx].color &&
+			tile.isJoker == this.own[idx].isJoker) {
+			removeIndex = idx;
+			break;
+		}
+	}
+	
+	this.own.splice(removeIndex,1);
+
+};
+
+User.prototype.validateTile = function() {
+
+	return true;
+
+	//gameBoard에 위치한 타일들에 대해 검사 로직
+	/*
+	function validationRule(set) {
+
+		console.log("**** validation start ****");
+
+		// Minimum count of set validation
+		if(set.length < 3 ) return false;
+
+		var colorSet = new Set();
+		var scoreSet = new Set();
+
+		for(var idx in set) {
+	  colorSet.add(set[idx].color);
+	  scoreSet.add(set[idx].score);
+		}
+
+		console.log(colorSet);
+		console.log(scoreSet);
+
+		//색이 모두 같은 경우
+		if(colorSet.size == 1) {
+
+	  //연속된 숫자인지 검사
+	  for (value of scoreSet.values()) {
+	  console.log(value);
+	  }
+	  //TODO
+	  return true;
+	  
+		}else {
+	  //같은 숫자인지 검사
+	  if(scoreSet.size == 1) {
+	  return true;
+	  }
+		}
+
+		console.log("**** validation end ****");
+
+		return false;
+
+	}*/
+
+};
+
+User.prototype.validateRegisterTile = function() {
+	
+	var sumOfScore = 0;
+	for(var idx in this.use) {
+		sumOfScore += Number(this.use[idx].score);
+	}
+
+	return (sumOfScore >= 30) ? true : false;
+
+};
+
+User.prototype.toString = function() {
 	return "id : " + this.id
 	+ " registerYN : " + this.registerYN 
 	+ " use : " + JSON.stringify(this.use) 
@@ -71,8 +172,9 @@ User.prototype.toString = function(id) {
 };
 
 //Tile class
-function Tile (score, color, isJoker) {
+function Tile (score, color, isJoker, isOwn) {
 	this.score = score;
 	this.color = color;
 	this.isJoker = isJoker;
+	this.isOwn = isOwn;
 }

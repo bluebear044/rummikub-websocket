@@ -66,7 +66,7 @@ webSocketServer.on("connection", function(ws) {
 
         }else if(requestObject.command == CMD.TURN) {
 
-            processTurn(user);
+            processTurn(requestObject.param, user);
 
         }else if(requestObject.command == CMD.SYNC) {
             
@@ -115,9 +115,7 @@ webSocketServer.on("connection", function(ws) {
         gamePlayingFlag = true;
         rummikub.initializeGame();
 
-        // select next turn player
-        //console.log("turnCount % rummikub.users.length : " + turnCount % rummikub.users.length);
-        //console.log("rummikub.users : " + rummikub.users);
+        // select next turn player    
         currentPlayer = rummikub.users[turnCount % rummikub.users.length];
 
         for(var idx in rummikub.users) {
@@ -131,19 +129,73 @@ webSocketServer.on("connection", function(ws) {
 
     }
 
-    function processTurn(user) {
+    function processTurn(param, user) {
         turnCount++;
         // select next turn player
         currentPlayer = rummikub.users[turnCount % rummikub.users.length];
+        
+        for(var i=0; i<BOARD.HEIGHT; i++) {
+          for(var j=0; j<BOARD.WIDTH; j++) {
+            var tile = param[(i*BOARD.WIDTH)+j];
 
-        //todo
-        //현재 올려져 있는 보드의 타일이 규칙에 맞는 지 확인하는 로직
-        //특정 사용자의 ownBoard의 타일이 모두 없어졌는지 확인하는 로
-        //특정 사용자에게 벌칙으로 1타일 혹은 3타일 가져가는 로직
-        //turn종료 당시의 gameBoard에 있는 블럭은 ownBoard로 못 옮기도록 셋팅하도록 호출하기
+            if(tile != null) {
+                if(tile.isOwn == true) {
+                    user.addUseTile(tile);
+                    user.removeOwnTile(tile);    
+                }
+            }
+            
+          }
+        }
+
+        console.log("\n\n\n");
+        console.log("====================================================");
+        console.log(user.toString());
+        console.log("====================================================");
+        console.log("\n\n\n");
+
+        // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
+        if(user.use.length == 0) {
+            webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, 1) ));
+            webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyOneTile()), user.id);
+        }else {
+
+            // 타일이 규칙에 맞게 배치되어있는지 확인
+            if(user.validateTile()) {
+                // 등록 된 사용자인 경우
+                if(user.registerYN) {
+
+                    // ownBoard의 타일이 모두 없어졌으면 게임 종료
+                    if(user.own.length == 0) {
+                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_WIN, user.id) ));
+                        processExit();
+                        return;
+                    }
+
+                }else {
+                    // use타일의 합이 30이 넘는지 확인
+                    if(user.validateRegisterTile()) {
+                        user.registerYN = true;
+                    }else {
+                        // roll back
+                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, 3) ));
+                        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyThreeTile()), user.id);
+                    }
+                }
+
+            }else {
+                // roll back
+                webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, 3) ));
+                webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyThreeTile()), user.id);
+            }
+
+        }
+
+        // Turn 종료 전 사용 타일 초기화
+        user.use = [];
+        // Turn 종료 후 gameBoard 설정
         webSocketServer.broadcast(UTIL.makeCommand( CMD.TURN ));
 
-        
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_TURN, user.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));

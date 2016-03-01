@@ -34,6 +34,10 @@ var Game = {
 
           Game.processTurn(responseObject.param);
 
+        }else if(responseObject.command == CMD.PENALTY) {
+
+          Game.processPenalty(responseObject.param);
+
         }else if(responseObject.command == CMD.EXIT) {
 
           Game.processExit();
@@ -64,8 +68,8 @@ var Game = {
       Game.registerButtonEvent();
 
       //Initialize Board
-      Game.makeBoard("#gameBoard", BOARD.WIDTH, BOARD.HEIGHT);
-      Game.makeBoard("#ownBoard", BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
+      Game.makeBoard("#"+BOARD.GAME_BOARD_ID, BOARD.WIDTH, BOARD.HEIGHT);
+      Game.makeBoard("#"+BOARD.OWN_BOARD_ID, BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
 
       //Setting Intro Tiles
       Game.introBoard();
@@ -119,31 +123,50 @@ var Game = {
   },
 
   nextTurn: function(ws) {
-      ws.send(JSON.stringify( UTIL.makeCommand(CMD.TURN) ));
+      var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
+      //console.log(JSON.stringify(boardSerializeMap));
+      ws.send(JSON.stringify( UTIL.makeCommand(CMD.TURN, boardSerializeMap) ));
   },
 
   processStart: function(param) {
 
-    Game.clearBoard("#gameBoard");
+    Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
     for(var idx in param.own) {
       var i = Math.floor(idx/BOARD.WIDTH);
       var j = idx%BOARD.WIDTH;
-      Game.settingTile("#ownBoard", param.own[idx], i, j);
+      Game.settingTile("#"+BOARD.OWN_BOARD_ID, param.own[idx], i, j);
     }
 
   },
 
   processTurn: function(param) {
-    //todo
-    //turn종료 당시의 gameBoard에 있는 블럭은 ownBoard로 못 옮기도록 셋팅하기
-    console.log("TODO!!!");
 
+    //turn종료 당시 gameBoard에 있는 타일은 ownBoard로 못 옮기도록 설정 (id값을 own_xxxx 에서 game_xxxx로 바꿈)
+    var tbl = $("table" + "#" + BOARD.GAME_BOARD_ID + " tr").map(function() {
+      return $(this).find('td').map(function() {
+        if($(this).html() != "") {
+
+          var tileId = $(this).children("div").attr("id");
+          if(tileId.split("_")[0] == "own") {
+            $(this).children("div").attr("id",tileId.replace("own","game"));
+          }
+
+        }
+      }).get();
+    }).get();
+
+  },
+
+  processPenalty: function(param) {
+
+    alert("ownBoard에 " + param[0].score + param[0].color + "추가");
+  
   },
 
   processExit: function() {
 
-      Game.clearBoard("#gameBoard");
-      Game.clearBoard("#ownBoard");
+      Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
+      Game.clearBoard("#"+BOARD.OWN_BOARD_ID);
       Game.introBoard();
       $( "#turnBtn" ).attr("disabled", true);
 
@@ -171,12 +194,12 @@ var Game = {
       //Active/Deactive turn button
       if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
         $( "#turnBtn" ).attr("disabled", false);
-        Redips.enableDrag("gameBoard",true);
-        Redips.enableDrag("ownBoard",true);
+        Redips.enableDrag(BOARD.GAME_BOARD_ID, true);
+        Redips.enableDrag(BOARD.OWN_BOARD_ID, true);
       }else {
         $( "#turnBtn" ).attr("disabled", true);
-        Redips.enableDrag("gameBoard",false);
-        Redips.enableDrag("ownBoard",false);
+        Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
+        Redips.enableDrag(BOARD.OWN_BOARD_ID, false);
       }
     }
 
@@ -194,14 +217,14 @@ var Game = {
 
   processSync: function(param) {
 
-    Game.clearBoard("#gameBoard");
+    Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
 
     for(var i=0; i<BOARD.HEIGHT; i++) {
       for(var j=0; j<BOARD.WIDTH; j++) {
         var tile = param[(i*BOARD.WIDTH)+j];
 
         if(tile != null) {
-          Game.settingTile("#gameBoard", tile, i, j);
+          Game.settingTile("#"+BOARD.GAME_BOARD_ID, tile, i, j);
         }
         
       }
@@ -213,13 +236,26 @@ var Game = {
     $("#messages").append("<p>"+message+"</p>");
   },
 
-  settingTile: function(id,obj,x,y) {
+  settingTile: function(id,tile,x,y) {
       var tileHtml = "";
-      if(obj.isJoker) {
-        tileHtml = "<div class=\"card redips-drag\"><span class=\"jo_eye\"></span><span class=\"jo_eye\"></span><span class=\"jo_mouth circle\"></span></div>";
-      }else {
-        tileHtml = "<div class=\"card redips-drag\"><span class=\""+obj.color+" circle\">"+obj.score+"</span></div>";
+      var cardID = "";
+
+      if("#"+BOARD.OWN_BOARD_ID == id || tile.isOwn == true){
+        cardID = "own_"+UTIL.random4digit();
+        // id가 own으로 시작하는 경우 "redips-mark" class가 지정된 ownBoar에 타일을 놓을 수 있도록 설정
+        //(기본적으로 redips-mark 로 지정된 곳에는 어떤 요소도 놓을 수 없음)
+        Redips.mark(cardID);
+
+      }else{
+        cardID = "game_"+UTIL.random4digit();
       }
+
+      if(tile.isJoker) {
+        tileHtml = "<div class=\"card redips-drag\" id=\""+cardID+"\" ><span class=\"jo_eye\"></span><span class=\"jo_eye\"></span><span class=\"jo_mouth circle\"></span></div>";
+      }else {
+        tileHtml = "<div class=\"card redips-drag\" id=\""+cardID+"\" ><span class=\""+tile.color+" circle\">"+tile.score+"</span></div>";
+      }
+
       this.settingTileHtml(id,tileHtml,x,y);
   },
 
@@ -230,16 +266,20 @@ var Game = {
   makeBoard: function(id,x,y){
     var talbeHtml = "";
 
-      for(i=0; i<y; i++) {
-        talbeHtml += "<tr>";
-        for(j=0; j<x; j++) {
+    for(i=0; i<y; i++) {
+      talbeHtml += "<tr>";
+      for(j=0; j<x; j++) {
+        if("#"+BOARD.OWN_BOARD_ID == id){
+          talbeHtml += "<td class=\"redips-mark\">";
+        }else {
           talbeHtml += "<td>";
-          talbeHtml += "</td>";
         }
-        talbeHtml += "</tr>";
+        talbeHtml += "</td>";
       }
+      talbeHtml += "</tr>";
+    }
 
-      $(id).html(talbeHtml);
+    $(id).html(talbeHtml);
   },
 
   serializeTable: function(id) {
@@ -253,13 +293,20 @@ var Game = {
           tableObj.push(null);
         } else {
 
+          var isJoker = false;
+          var isOwn = false;
+          if($(this).children("div").attr("id").split("_")[0] == "own") {
+            isOwn = true;
+          }
+
           if($(this).children("div").children("span").html() == "") {
-            var tile = new Tile("30", "red", true);
+            isJoker = true;
+            var tile = new Tile("30", "red", isJoker, isOwn);
             tableObj.push(tile);
           }else {
             var score = $(this).children("div").children("span").html();
             var color = $(this).children("div").children("span").attr("class").replace(" circle","");
-            var tile = new Tile(score, color, false);
+            var tile = new Tile(score, color, isJoker, isOwn);
             tableObj.push(tile);
           }
 
@@ -272,16 +319,16 @@ var Game = {
   },
 
   introBoard: function() {
-      Game.settingTile("#gameBoard", new Tile("R", "red", false), 1, 4);
-      Game.settingTile("#gameBoard", new Tile("U", "red", false), 1, 5);
-      Game.settingTile("#gameBoard", new Tile("M", "red", false), 1, 6);
-      Game.settingTile("#gameBoard", new Tile("30", "red", true), 1, 7);
-      Game.settingTile("#gameBoard", new Tile("Y", "red", false), 1, 8);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("R", "red", false), 1, 4);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "red", false), 1, 5);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("M", "red", false), 1, 6);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("30", "red", true), 1, 7);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("Y", "red", false), 1, 8);
 
-      Game.settingTile("#gameBoard", new Tile("C", "blue", false), 2, 8);
-      Game.settingTile("#gameBoard", new Tile("U", "yellow", false), 2, 9);
-      Game.settingTile("#gameBoard", new Tile("B", "black", false), 2, 10);
-      Game.settingTile("#gameBoard", new Tile("E", "red", false), 2, 11);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("C", "blue", false), 2, 8);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "yellow", false), 2, 9);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("B", "black", false), 2, 10);
+      Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("E", "red", false), 2, 11);
   },
 
   clearBoard: function(id) {
@@ -299,12 +346,12 @@ var Game = {
 var Redips = {
   initialize: function() {
     
-    //REDIPS.drag.init(); //처음부터 블럭 움직이지 못하도록 초기화 하지 않음
+    //REDIPS.drag.init(); //처음부터 타일 움직이지 못하도록 초기화 하지 않음
     REDIPS.drag.dropMode = 'single';
 
     //REDIPS Dropped Event
     REDIPS.drag.event.dropped = function () {
-      var boardSerializeMap = Game.serializeTable("#gameBoard");
+      var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
       //console.log(JSON.stringify(boardSerializeMap));
       var requestObject = UTIL.makeCommand(CMD.SYNC, boardSerializeMap);
 
@@ -317,6 +364,10 @@ var Redips = {
   enableDrag: function(cssName, isEnable) {
     REDIPS.drag.init();
     REDIPS.drag.enableTable(isEnable, cssName);
+  },
+
+  mark: function(id) {
+    REDIPS.drag.mark.exception[id] = "mark";
   }
 
 };

@@ -3,7 +3,9 @@ var BOARD = {
 	WIDTH : 17,
 	HEIGHT : 6,
 	OWN_WIDTH : 17,
-	OWN_HEIGHT : 2
+	OWN_HEIGHT : 2,
+	GAME_BOARD_ID : "gameBoard",
+	OWN_BOARD_ID : "ownBoard"
 }
 
 var CMD = {
@@ -14,7 +16,8 @@ var CMD = {
 	TURN : "::TURN::", 
 	EXIT : "::EXIT::",
 	INFO : "::INFO::",
-	PRIVATE_INFO : "::PRIVATE_INFO::"
+	PRIVATE_INFO : "::PRIVATE_INFO::",
+	PENALTY : "::PENALTY::"
 };
 
 var MESSAGE = {
@@ -28,7 +31,9 @@ var MESSAGE = {
 	MSG_TURN_COUNT : "{0}번째 턴",
 	MSG_GAME_READY : "현재 게임 준비중",
 	MSG_GAME_PLAYING : "현재 게임 진행중",
-	MSG_MY_INFO : "당신은 {0} 입니다."
+	MSG_MY_INFO : "당신은 {0} 입니다.",
+	MSG_WIN : "{0} 님이 승리하셨습니다.",
+	MSG_PENALTY : "{0} 님 벌칙타일 {1}개 가져갑니다."
 };
 
 var UTIL = {
@@ -40,10 +45,14 @@ var UTIL = {
         };
     },
 
-	getMessage: function(msg, param) {
+	getMessage: function(msg, param0, param1) {
 
-		if(param != null) {
-			return msg.replace("{0}", param);
+		if(param0 != null) {
+			msg = msg.replace("{0}", param0);
+		}
+
+		if(param1 != null) {
+			msg = msg.replace("{1}", param1);
 		}
 
 		return msg;
