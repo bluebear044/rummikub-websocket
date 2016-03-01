@@ -54,20 +54,10 @@ Rummikub.prototype.removeUser = function(id) {
 	this.users.splice(removeIndex,1);
 };
 
-Rummikub.prototype.penaltyOneTile = function() {
+Rummikub.prototype.penaltyTile = function(numberOfPenaltyTile) {
 
 	var penaltyTile = [];
-	for(var idx=0; idx < 1; idx++) {
-  		penaltyTile[idx] = this.tiles.pop();
-	}
-
-	return penaltyTile;
-};
-
-Rummikub.prototype.penaltyThreeTile = function() {
-
-	var penaltyTile = [];
-	for(var idx=0; idx < 3; idx++) {
+	for(var idx=0; idx < numberOfPenaltyTile; idx++) {
   		penaltyTile[idx] = this.tiles.pop();
 	}
 

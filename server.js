@@ -156,8 +156,8 @@ webSocketServer.on("connection", function(ws) {
 
         // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
         if(user.use.length == 0) {
-            webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, 1) ));
-            webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyOneTile()), user.id);
+            webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_ONE) ));
+            webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_ONE)), user.id);
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
@@ -178,15 +178,15 @@ webSocketServer.on("connection", function(ws) {
                         user.registerYN = true;
                     }else {
                         // roll back
-                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, 3) ));
-                        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyThreeTile()), user.id);
+                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
+                        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id);
                     }
                 }
 
             }else {
                 // roll back
-                webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, 3) ));
-                webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyThreeTile()), user.id);
+                webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
+                webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id);
             }
 
         }

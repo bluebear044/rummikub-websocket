@@ -5,7 +5,9 @@ var BOARD = {
 	OWN_WIDTH : 17,
 	OWN_HEIGHT : 2,
 	GAME_BOARD_ID : "gameBoard",
-	OWN_BOARD_ID : "ownBoard"
+	OWN_BOARD_ID : "ownBoard",
+	PENALTY_ONE : 1,
+	PENALTY_THREE : 3
 }
 
 var CMD = {
