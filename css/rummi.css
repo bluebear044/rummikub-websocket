@@ -75,6 +75,8 @@ tr + tr { border-top: 1px solid white; }
 
 .messageBox {
   color: white;
+  height: 90%;
   font-size: 15px;
   padding: 5px;
+  overflow: auto;
 }

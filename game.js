@@ -33,6 +33,7 @@ var Game = {
         }else if(responseObject.command == CMD.TURN) {
 
           Game.processTurn(responseObject.param);
+          Sound.playEffect("bell");
 
         }else if(responseObject.command == CMD.PENALTY) {
 
@@ -53,10 +54,14 @@ var Game = {
         }else if(responseObject.command == CMD.SYNC) {
 
           Game.processSync(responseObject.param);
+          Sound.playEffect("cardPlace");
 
         }else if(responseObject.command == CMD.CHAT) {
 
           Game.processChat(responseObject.param);
+          if(responseObject.param.indexOf(" : ") > -1) {
+            Sound.playEffect("chat");
+          }
 
         }else {
           // nothing happen
@@ -76,6 +81,9 @@ var Game = {
 
       //REDIPS Initialize
       Redips.initialize();
+
+      //Sound Initialize
+      Sound.initialize();
 
   },
 
@@ -234,6 +242,8 @@ var Game = {
 
   processChat: function(message) {
     $("#messages").append("<p>"+message+"</p>");
+    //메시지창 스크롤 최하단 유지
+    $("#messages").scrollTop($("#messages")[0].scrollHeight);
   },
 
   settingTile: function(id,tile,x,y) {

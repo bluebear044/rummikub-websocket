@@ -6,9 +6,14 @@ function Rummikub () {
 	this.users = [];
 }
 
-Rummikub.prototype.shuffle = function(o) {
-    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    return o;
+Rummikub.prototype.shuffle = function(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
 };
 
 Rummikub.prototype.initializeGame = function() {
