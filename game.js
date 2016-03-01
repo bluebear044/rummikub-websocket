@@ -178,7 +178,9 @@ var Game = {
 
   processPenalty: function(param) {
 
-    alert("ownBoard에 " + param[0].score + param[0].color + "추가");
+    for(var idx in param) {
+      alert("ownBoard에 " + param[idx].score + " " + param[idx].color + " " + param[idx].isJoker + "추가");
+    }
   
   },
 
@@ -265,8 +267,8 @@ var Game = {
 
       if("#"+BOARD.OWN_BOARD_ID == id || tile.isOwn == true){
         cardID = "own_"+UTIL.random4digit();
-        // id가 own으로 시작하는 경우 "redips-mark" class가 지정된 ownBoar에 타일을 놓을 수 있도록 설정
-        //(기본적으로 redips-mark 로 지정된 곳에는 어떤 요소도 놓을 수 없음)
+        // id가 own으로 시작하는 경우 "redips-mark" class가 지정된 ownBoard에 타일을 놓을 수 있도록 설정
+        // (기본적으로 redips-mark 로 지정된 곳에는 어떤 요소도 놓을 수 없음)
         Redips.mark(cardID);
 
       }else{
@@ -292,6 +294,7 @@ var Game = {
     for(i=0; i<y; i++) {
       talbeHtml += "<tr>";
       for(j=0; j<x; j++) {
+        // ownBoard에는 특정 mark가 된 타일만 놓을 수 있도록 "redips-mark" class 설정
         if("#"+BOARD.OWN_BOARD_ID == id){
           talbeHtml += "<td class=\"redips-mark\">";
         }else {
