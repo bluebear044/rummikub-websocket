@@ -23,6 +23,8 @@ var CMD = {
 };
 
 var MESSAGE = {
+	MSG_BTN_START : "게임시작",
+	MSG_BTN_NEXT_TURN : "턴종료",
 	MSG_START : "게임이 시작되었습니다.",
 	MSG_EXIT : "게임이 종료되었습니다.",
 	MSG_TURN : "{0} 님이 턴을 종료하였습니다.",

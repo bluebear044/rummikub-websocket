@@ -104,15 +104,24 @@ var Game = {
       }
     });
 
-    $( "#startBtn" ).click(function() {
+    Game.bindGameStartButtonEvent();
+
+  },
+
+  bindGameStartButtonEvent: function() {
+    $( "#gameBtn").unbind( "click" );
+    $( "#gameBtn").html(MESSAGE.MSG_BTN_START);
+    $( "#gameBtn" ).click(function() {
       Game.startGame(ws);
     });
+  },
 
-    $( "#turnBtn" ).click(function() {
+  bindTurnButtonEvent: function() {
+    $( "#gameBtn").unbind( "click" );
+    $( "#gameBtn").html(MESSAGE.MSG_BTN_NEXT_TURN);
+    $( "#gameBtn" ).click(function() {
       Game.nextTurn(ws);
     });
-    $( "#turnBtn" ).attr("disabled", true);
-
   },
 
   webSocketConnect: function() {
@@ -145,6 +154,8 @@ var Game = {
       Game.settingTile("#"+BOARD.OWN_BOARD_ID, param.own[idx], i, j);
     }
 
+    Game.bindTurnButtonEvent();
+
   },
 
   processTurn: function(param) {
@@ -176,7 +187,9 @@ var Game = {
       Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
       Game.clearBoard("#"+BOARD.OWN_BOARD_ID);
       Game.introBoard();
-      $( "#turnBtn" ).attr("disabled", true);
+      $( "#gameBtn" ).attr("disabled", false);
+
+      Game.bindGameStartButtonEvent();
 
   },
 
@@ -193,19 +206,19 @@ var Game = {
 
     //Active/Deactive start button
     if(param.connectCount > 1 && param.gamePlayingFlag == false) {
-      $( "#startBtn" ).attr("disabled", false);
+      $( "#gameBtn" ).attr("disabled", false);
     }else {
-      $( "#startBtn" ).attr("disabled", true);
+      $( "#gameBtn" ).attr("disabled", true);
     }
 
     if(param.gamePlayingFlag == true ) {
       //Active/Deactive turn button
       if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
-        $( "#turnBtn" ).attr("disabled", false);
+        $( "#gameBtn" ).attr("disabled", false);
         Redips.enableDrag(BOARD.GAME_BOARD_ID, true);
         Redips.enableDrag(BOARD.OWN_BOARD_ID, true);
       }else {
-        $( "#turnBtn" ).attr("disabled", true);
+        $( "#gameBtn" ).attr("disabled", true);
         Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
         Redips.enableDrag(BOARD.OWN_BOARD_ID, false);
       }
