@@ -38,6 +38,7 @@ tr + tr { border-top: 1px solid white; }
   background-size:16px 16px;
   background-color:#282828;
 }
+
 #ownBoard {
   border: 1px solid white;
   table-layout:fixed;
@@ -79,4 +80,21 @@ tr + tr { border-top: 1px solid white; }
   font-size: 15px;
   padding: 5px;
   overflow: auto;
+}
+
+#dialog {
+  text-align:center; 
+}
+
+#dialog p {
+  padding-bottom: 15px;
+}
+
+#dialog span {
+  display:inline-block;
+}
+
+/*For jquery ui dialog*/
+.ui-dialog-titlebar {
+    display: none;
 }

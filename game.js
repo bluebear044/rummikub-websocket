@@ -106,6 +106,10 @@ var Game = {
 
     Game.bindGameStartButtonEvent();
 
+    $( "#dialog" ).click(function() {
+      $(this).dialog('close');
+    });
+
   },
 
   bindGameStartButtonEvent: function() {
@@ -178,9 +182,27 @@ var Game = {
 
   processPenalty: function(param) {
 
+    //dialog message
+    var html = "";
+    html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, param.length)+"</p>"
+    html += "<span>"
     for(var idx in param) {
-      alert("ownBoard에 " + param[idx].score + " " + param[idx].color + " " + param[idx].isJoker + "추가");
+      if(param[idx].isJoker) {
+        html += "<div class=\"card\"><span class=\"jo_eye\"></span><span class=\"jo_eye\"></span><span class=\"jo_mouth circle\"></span></div>";
+      }else {
+        html += "<div class=\"card\"><span class=\""+param[idx].color+" circle\">"+param[idx].score+"</span></div>";
+      }
     }
+    html += "</span>"
+
+    Game.openDialog(html, function() {
+      //setting tiles  
+      for(var idx in param) {
+        var position = Game.getEmptySpaceTablePosition("#"+BOARD.OWN_BOARD_ID, BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
+        param[idx].isOwn = true;
+        Game.settingTile("#"+BOARD.OWN_BOARD_ID, param[idx], position.i, position.j);
+      }
+    });
   
   },
 
@@ -256,7 +278,13 @@ var Game = {
   },
 
   processChat: function(message) {
-    $("#messages").append("<p>"+message+"</p>");
+
+    if(message.indexOf(" : ") > -1) {
+      $("#messages").append("<p>"+message+"</p>");
+    }else{
+      $("#messages").append("<p style='color:#58ACFA'>"+message+"</p>");
+    }
+
     //메시지창 스크롤 최하단 유지
     $("#messages").scrollTop($("#messages")[0].scrollHeight);
   },
@@ -344,6 +372,27 @@ var Game = {
     return tableObj;
   },
 
+  getEmptySpaceTablePosition: function(id, targetTableWidth, targetTableHeight) {
+
+    var position = {};
+    var ownBoardSerializeMap = Game.serializeTable(id);
+
+    for(var i=0; i<targetTableHeight; i++) {
+      for(var j=0; j<targetTableWidth; j++) {
+        var tile = ownBoardSerializeMap[(i*targetTableWidth)+j];
+
+        //타일이 없는 곳 좌표 리턴
+        if(tile == null) {
+          position.i = i;
+          position.j = j;
+          return position;
+        }
+        
+      }
+    }
+
+  },
+
   introBoard: function() {
 
       //기준좌표
@@ -370,6 +419,13 @@ var Game = {
       }
     }
 
+  },
+
+  openDialog: function(html, callback) {
+    $("#dialog").dialog({
+      close: callback
+    });
+    $("#dialog").html(html);
   }
 
 };

@@ -204,10 +204,10 @@ webSocketServer.on("connection", function(ws) {
 
     function processExit() {
         gamePlayingFlag = false;
-
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.EXIT ));
+   
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, MESSAGE.MSG_EXIT));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.EXIT ));
     }
 
     function processSync(param) {
@@ -227,14 +227,11 @@ webSocketServer.on("connection", function(ws) {
         connectCount--;
         turnCount = 1;
 
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_DISCONNECT, user.id) ));
+
         if(gamePlayingFlag == true) {
             processExit();
         }
-
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_DISCONNECT, user.id) ));
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, MESSAGE.MSG_EXIT ));
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.EXIT ));
         
     }
 
