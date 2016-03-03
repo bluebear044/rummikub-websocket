@@ -250,13 +250,19 @@ var Game = {
 
   processWin: function(param) {
 
-      //win dialog
       var html = "";
-      html += "<p>"+ "승리!!" + param +"</p>"
-      Game.openDialog(html, null);
+      var winHtml = "";
+      for(var idx in param) {
+
+        if(param[idx].isWin) {
+          winHtml += "<p>"+ UTIL.getMessage(MESSAGE.MSG_WIN, param[idx].id) +" </p>"; 
+        }
+
+        html += "<p>"+ param[idx].id + " score : " + param[idx].score + "</p>";        
+      }
+      Game.openDialog(winHtml + html, null);
 
       $( "#gameBtn" ).attr("disabled", false);
-
       Game.bindGameStartButtonEvent();
 
   },

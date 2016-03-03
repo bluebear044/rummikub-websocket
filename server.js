@@ -104,17 +104,33 @@ webSocketServer.on("connection", function(ws) {
         };
     }
 
-    function userAllInfo() {
+    function userScoreInfo() {
 
-        /*
+        var userScoreInfo = [];
+        
+        var winner = {};
+        winner.isWin = true;
+        winner.id = "";
+        winner.score = 0;
+
         for(var idx in rummikub.users) {
-            rummikub.users[idx].own
+            if(rummikub.users[idx].own.length == 0) {
+                winner.id = rummikub.users[idx].id;
+            }else {
+                var loser = {};
+                loser.isWin = false;
+                loser.id = rummikub.users[idx].id;
+                loser.score = 0;
+                for(var ownIdx in rummikub.users[idx].own) {
+                    loser.score -= Number(rummikub.users[idx].own[ownIdx].score);
+                    winner.score += Number(rummikub.users[idx].own[ownIdx].score);
+                }
+                userScoreInfo.push(loser);
+            }
         }
-        */
+        userScoreInfo.push(winner);
 
-        return {
-            "userInformation" : "something"
-        };
+        return userScoreInfo;
     }
 
     function processJoin(user) {
@@ -227,7 +243,7 @@ webSocketServer.on("connection", function(ws) {
    
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_WIN, user.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
-        webSocketServer.broadcast(UTIL.makeCommand( CMD.WIN, userAllInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.WIN, userScoreInfo() ));
     }
 
     function processSync(param) {
