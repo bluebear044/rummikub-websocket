@@ -35,6 +35,10 @@ var Game = {
           Game.processTurn(responseObject.param);
           Sound.playEffect("bell");
 
+        }else if(responseObject.command == CMD.ROLLBACK) {
+
+          Game.processRollback(responseObject.param);
+
         }else if(responseObject.command == CMD.PENALTY) {
 
           Game.processPenalty(responseObject.param);
@@ -42,6 +46,10 @@ var Game = {
         }else if(responseObject.command == CMD.EXIT) {
 
           Game.processExit();
+
+        }else if(responseObject.command == CMD.WIN) {
+
+          Game.processWin(responseObject.param);
 
         }else if(responseObject.command == CMD.INFO) {
 
@@ -133,6 +141,16 @@ var Game = {
     return new WebSocket(host);
   },
 
+  syncBoard: function() {
+      var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
+      //console.log(JSON.stringify(boardSerializeMap));
+      var requestObject = UTIL.makeCommand(CMD.SYNC, boardSerializeMap);
+
+      console.log("REQUEST CMD : " + requestObject.command);
+      console.log("REQUEST PARAM : " + requestObject.param);
+      ws.send(JSON.stringify(requestObject));
+  },
+
   sendMessage: function(ws) {
       var messageValue = $( "#msg" ).val();
       ws.send(JSON.stringify( UTIL.makeCommand( CMD.CHAT, messageValue) ));
@@ -180,6 +198,19 @@ var Game = {
 
   },
 
+  processRollback: function(param) {
+
+    Game.clearUseTile();
+    Game.syncBoard(); //rollback 작업이 broadcast가 아니기 때문에 타일 정리 후 sync 한번 호출
+
+    for(var idx in param) {
+        var position = Game.getEmptySpaceTablePosition("#"+BOARD.OWN_BOARD_ID, BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
+        param[idx].isOwn = true;
+        Game.settingTile("#"+BOARD.OWN_BOARD_ID, param[idx], position.i, position.j);
+    }
+  
+  },
+
   processPenalty: function(param) {
 
     //dialog message
@@ -211,6 +242,19 @@ var Game = {
       Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
       Game.clearBoard("#"+BOARD.OWN_BOARD_ID);
       Game.introBoard();
+      $( "#gameBtn" ).attr("disabled", false);
+
+      Game.bindGameStartButtonEvent();
+
+  },
+
+  processWin: function(param) {
+
+      //win dialog
+      var html = "";
+      html += "<p>"+ "승리!!" + param +"</p>"
+      Game.openDialog(html, null);
+
       $( "#gameBtn" ).attr("disabled", false);
 
       Game.bindGameStartButtonEvent();
@@ -375,11 +419,11 @@ var Game = {
   getEmptySpaceTablePosition: function(id, targetTableWidth, targetTableHeight) {
 
     var position = {};
-    var ownBoardSerializeMap = Game.serializeTable(id);
+    var serializeMap = Game.serializeTable(id);
 
     for(var i=0; i<targetTableHeight; i++) {
       for(var j=0; j<targetTableWidth; j++) {
-        var tile = ownBoardSerializeMap[(i*targetTableWidth)+j];
+        var tile = serializeMap[(i*targetTableWidth)+j];
 
         //타일이 없는 곳 좌표 리턴
         if(tile == null) {
@@ -421,6 +465,22 @@ var Game = {
 
   },
 
+  clearUseTile: function() {
+
+    var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
+    for(var i=0; i<BOARD.HEIGHT; i++) {
+      for(var j=0; j<BOARD.WIDTH; j++) {
+        var tile = boardSerializeMap[(i*BOARD.WIDTH)+j];
+
+        if(tile != null && tile.isOwn == true) {
+          Game.settingTileHtml("#"+BOARD.GAME_BOARD_ID, "", i, j);
+        }
+        
+      }
+    }
+
+  },
+
   openDialog: function(html, callback) {
     $("#dialog").dialog({
       close: callback
@@ -438,13 +498,7 @@ var Redips = {
 
     //REDIPS Dropped Event
     REDIPS.drag.event.dropped = function () {
-      var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
-      //console.log(JSON.stringify(boardSerializeMap));
-      var requestObject = UTIL.makeCommand(CMD.SYNC, boardSerializeMap);
-
-      console.log("REQUEST CMD : " + requestObject.command);
-      console.log("REQUEST PARAM : " + requestObject.param);
-      ws.send(JSON.stringify(requestObject));
+      Game.syncBoard();
     };
   },
 

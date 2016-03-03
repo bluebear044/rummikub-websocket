@@ -19,7 +19,9 @@ var CMD = {
 	EXIT : "::EXIT::",
 	INFO : "::INFO::",
 	PRIVATE_INFO : "::PRIVATE_INFO::",
-	PENALTY : "::PENALTY::"
+	PENALTY : "::PENALTY::",
+	ROLLBACK : "::ROLLBACK",
+	WIN : "::WIN::"
 };
 
 var MESSAGE = {

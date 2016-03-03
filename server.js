@@ -104,6 +104,19 @@ webSocketServer.on("connection", function(ws) {
         };
     }
 
+    function userAllInfo() {
+
+        /*
+        for(var idx in rummikub.users) {
+            rummikub.users[idx].own
+        }
+        */
+
+        return {
+            "userInformation" : "something"
+        };
+    }
+
     function processJoin(user) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
         webSocketServer.sendMessage(UTIL.makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
@@ -156,8 +169,8 @@ webSocketServer.on("connection", function(ws) {
 
         // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
         if(user.use.length == 0) {
-            webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_ONE) ));
             webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_ONE)), user.id);
+            webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_ONE) ));
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
@@ -167,8 +180,7 @@ webSocketServer.on("connection", function(ws) {
 
                     // ownBoard의 타일이 모두 없어졌으면 게임 종료
                     if(user.own.length == 0) {
-                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_WIN, user.id) ));
-                        processExit();
+                        processWin();
                         return;
                     }
 
@@ -177,16 +189,16 @@ webSocketServer.on("connection", function(ws) {
                     if(user.validateRegisterTile()) {
                         user.registerYN = true;
                     }else {
-                        // roll back
-                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
+                        webSocketServer.sendMessage(UTIL.makeCommand( CMD.ROLLBACK, user.use), user.id);
                         webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id);
+                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
                     }
                 }
 
             }else {
-                // roll back
+                webSocketServer.sendMessage(UTIL.makeCommand( CMD.ROLLBACK, user.use), user.id);
+                webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id); 
                 webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
-                webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id);
             }
 
         }
@@ -208,6 +220,14 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, MESSAGE.MSG_EXIT));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.EXIT ));
+    }
+
+    function processWin() {
+        gamePlayingFlag = false;
+   
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_WIN, user.id) ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.WIN, userAllInfo() ));
     }
 
     function processSync(param) {
