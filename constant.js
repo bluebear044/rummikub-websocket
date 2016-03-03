@@ -7,7 +7,8 @@ var BOARD = {
 	GAME_BOARD_ID : "gameBoard",
 	OWN_BOARD_ID : "ownBoard",
 	PENALTY_ONE : 1,
-	PENALTY_THREE : 3
+	PENALTY_THREE : 3,
+	MESSAGE_COLOR : "#B0C4DE"
 }
 
 var CMD = {

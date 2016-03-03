@@ -332,7 +332,7 @@ var Game = {
     if(message.indexOf(" : ") > -1) {
       $("#messages").append("<p>"+message+"</p>");
     }else{
-      $("#messages").append("<p style='color:#58ACFA'>"+message+"</p>");
+      $("#messages").append("<p style='color:"+BOARD.MESSAGE_COLOR+"'>"+message+"</p>");
     }
 
     //메시지창 스크롤 최하단 유지
