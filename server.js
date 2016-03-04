@@ -163,6 +163,7 @@ webSocketServer.on("connection", function(ws) {
         // select next turn player
         currentPlayer = rummikub.users[turnCount % rummikub.users.length];
         
+        // 게임보드에 놓인 타일 중에 사용한 타일은 user.use에 추가하고 user.own에서는 제거
         for(var i=0; i<BOARD.HEIGHT; i++) {
           for(var j=0; j<BOARD.WIDTH; j++) {
             var tile = param[(i*BOARD.WIDTH)+j];
@@ -190,7 +191,7 @@ webSocketServer.on("connection", function(ws) {
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
-            if(user.validateTile()) {
+            if(user.validateTile(param)) {
                 // 등록 된 사용자인 경우
                 if(user.registerYN) {
 

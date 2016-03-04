@@ -76,7 +76,7 @@ function User (id, ownWebsocket) {
 	this.registerYN = false;
 	this.use = [];
 	this.own = [];
-}
+}	
 
 User.prototype.addUseTile = function(tile) {
 	this.use.push(tile);
@@ -99,52 +99,9 @@ User.prototype.removeOwnTile = function(tile) {
 
 };
 
-User.prototype.validateTile = function() {
+User.prototype.validateTile = function(param) {
 
 	return true;
-
-	//gameBoard에 위치한 타일들에 대해 검사 로직
-	/*
-	function validationRule(set) {
-
-		console.log("**** validation start ****");
-
-		// Minimum count of set validation
-		if(set.length < 3 ) return false;
-
-		var colorSet = new Set();
-		var scoreSet = new Set();
-
-		for(var idx in set) {
-	  colorSet.add(set[idx].color);
-	  scoreSet.add(set[idx].score);
-		}
-
-		console.log(colorSet);
-		console.log(scoreSet);
-
-		//색이 모두 같은 경우
-		if(colorSet.size == 1) {
-
-	  //연속된 숫자인지 검사
-	  for (value of scoreSet.values()) {
-	  console.log(value);
-	  }
-	  //TODO
-	  return true;
-	  
-		}else {
-	  //같은 숫자인지 검사
-	  if(scoreSet.size == 1) {
-	  return true;
-	  }
-		}
-
-		console.log("**** validation end ****");
-
-		return false;
-
-	}*/
 
 };
 

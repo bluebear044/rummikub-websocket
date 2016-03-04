@@ -61,7 +61,7 @@ tr + tr { border-top: 1px solid white; }
   position: fixed;
   top: 0;
   right: 0;
-  width: 200px;
+  width: 220px;
   height: 100%;
   background-color: black;
   opacity: 0.5;
@@ -71,7 +71,7 @@ tr + tr { border-top: 1px solid white; }
   position: fixed;
   bottom: 0;
   right: 0;
-  padding: 10px;
+  padding: 15px;
 }
 
 .messageBox {
@@ -84,7 +84,7 @@ tr + tr { border-top: 1px solid white; }
 
 #dialog {
   text-align:center;
-  background: #B0C4DE;
+  background: #AEC6CF;
 }
 
 #dialog p {

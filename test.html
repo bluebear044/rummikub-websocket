@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<title>test</title>
+  <script type="text/javascript" src="./js/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="./js/jquery-1.11.3.ui.min.js"></script>
+  <script type="text/javascript" src="./js/redips-drag-min.js"></script>
+	<script type="text/javascript" src="./rummikub.js"></script>
+  <script type="text/javascript" src="./constant.js"></script>
+  <script type="text/javascript" src="./game.js"></script>
+  <script type="text/javascript" src="./sound.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+      var param = [];
+      param.push(null);
+      param.push(null);
+      param.push(null);
+      param.push(new Tile("1", "red", false));
+      param.push(new Tile("2", "red", true));
+      param.push(new Tile("3", "red", false));
+      param.push(new Tile("4", "red", false));
+      param.push(null);
+      param.push(new Tile("12", "red", false));
+      param.push(new Tile("12", "yellow", false));
+      param.push(new Tile("12", "black", false));
+      param.push(new Tile("12", "yellow", false));
+      param.push(null);
+      param.push(null);
+      param.push(null);
+      param.push(new Tile("11", "red", false));
+      param.push(new Tile("30", "red", true));
+      param.push(new Tile("11", "black", false));
+
+
+      console.log("Start");
+      console.log(param);
+      console.log("==================");
+
+      var result = validate(param);
+
+      console.log("final result : " + result);
+
+		});
+
+    function groupInfo(group) {
+
+      for(var idx in group) {
+        console.log(group[idx].score + " " + group[idx].color + " " + group[idx].isJoker)
+      }
+
+    }
+
+    function validateSerialNumber(group) {
+
+      var colorSet = new Set();
+
+      //Check Serial Number
+      for(var idx in group) {
+
+        if(group[Number(idx)+1] != null) {
+          if(group[Number(idx)+1].score != Number(group[idx].score)+1) {
+            return false;
+          }else {
+            colorSet.add(group[idx].color);
+          }
+        }
+
+      }
+
+      //Check Same Color
+      if(colorSet.size == 1) {
+        return true;
+      }else {
+        return false;
+      }
+
+    }
+
+    function validateSameNumber(group) {
+
+      var colorSet = new Set();
+      var colorSetNotDuplicated = new Array();
+      var scoreSet = new Set();
+
+      for(var idx in group) {
+        colorSet.add(group[idx].color);
+        colorSetNotDuplicated.push(group[idx].color);
+        scoreSet.add(group[idx].score);
+      }
+
+      //Check Same Number & Different Color
+      if( colorSet.size == colorSetNotDuplicated.length && 
+          colorSet.size >= 3 && 
+          scoreSet.size == 1) {
+        return true;
+      }else {
+        return false;
+      }
+
+    }
+
+    function validate(param) {
+  
+      var group = [];
+      
+      for(var idx in param) {
+
+        if(param[idx] != null) {
+
+          group.push(param[idx]);
+
+          if(group.length < 3) {
+            continue;
+          }
+
+          console.log("=========check group=========");
+          groupInfo(group);
+          console.log("=============================");
+
+          var serialNumberValidateResult = validateSerialNumber(group);
+          var sameNumverValidateResult = validateSameNumber(group);
+
+          console.log("check serialNumberValidateResult ---->  " + serialNumberValidateResult);
+          console.log("check sameNumverValidateResult ----> " + sameNumverValidateResult);
+
+          if(serialNumberValidateResult || sameNumverValidateResult) {
+            console.log("success");
+          }else {
+            console.log("both fail");
+          }
+
+        }else {
+
+          if(group.length != 0 && group.length < 3) {
+            return false;
+          }
+
+          //공백이 중간에 나오는 경우 Group 초기화
+          group = [];
+
+        }
+      }
+
+      return true;
+    }
+
+	</script>
+</head>
+<body>
+Test Page
+</body>
+</html>
