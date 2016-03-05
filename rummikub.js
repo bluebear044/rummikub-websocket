@@ -277,10 +277,6 @@ function User (id, ownWebsocket) {
 	this.own = [];
 }	
 
-User.prototype.addUseTile = function(tile) {
-	this.use.push(tile);
-};
-
 User.prototype.removeOwnTile = function(tile) {
 
 	var removeIndex;

@@ -268,7 +268,10 @@ var Game = {
   },
 
   processInfo: function(param) {
-    $( "#connectCount" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, param.connectCount));
+
+    $( "#usersInfo" ).html(UTIL.getMessage(MESSAGE.MSG_CLIENT_COUNT, param.usersInfo.length));
+    $( "#usersInfo" ).attr("title", Game.makeUserInfo(param));
+    $( "#usersInfo" ).tooltip();
 
     if(param.gamePlayingFlag == true ) {
       $( "#gamePlaying" ).html(MESSAGE.MSG_GAME_PLAYING);
@@ -279,7 +282,7 @@ var Game = {
     }
 
     //Active/Deactive start button
-    if(param.connectCount > 1 && param.gamePlayingFlag == false) {
+    if(param.usersInfo.length > 1 && param.gamePlayingFlag == false) {
       $( "#gameBtn" ).attr("disabled", false);
     }else {
       $( "#gameBtn" ).attr("disabled", true);
@@ -364,6 +367,37 @@ var Game = {
 
   settingTileHtml: function(id,tileHtml,x,y) { 
       $(id+" tr:eq("+x+") td:eq("+y+")").html(tileHtml);
+  },
+
+  makeUserInfo: function(param){
+    
+    var html = "";
+    for(var idx in param.usersInfo) {
+
+      html += param.usersInfo[idx].id;
+      html += " ";
+
+      if(param.gamePlayingFlag) {
+
+        if(param.usersInfo[idx].registerYN) {
+          html += UTIL.getMessage(MESSAGE.MSG_REGISTER);
+          html += " ";
+        }else {
+          html += UTIL.getMessage(MESSAGE.MSG_UNREGISTER);
+          html += " ";
+        }
+
+        html += UTIL.getMessage(MESSAGE.MSG_REMAIN_TILES, param.usersInfo[idx].own.length);
+      }
+
+      html += ", ";
+
+    }
+
+    //remove last 2 character
+    html = html.slice(0, -2);
+
+    return html;
   },
 
   makeBoard: function(id,x,y){

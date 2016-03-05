@@ -34,13 +34,16 @@ var MESSAGE = {
 	MSG_NEXT_TURN : "{0} 님 차례 입니다.",
 	MSG_JOIN : "{0} 님이 입장하셨습니다.",
 	MSG_DISCONNECT : "{0} 님이 나가셨습니다.",
-	MSG_CLIENT_COUNT : "{0}명 접속중",
+	MSG_CLIENT_COUNT : "[{0}명 접속중]",
 	MSG_TURN_COUNT : "{0}번째 턴",
 	MSG_GAME_READY : "현재 게임 준비중",
 	MSG_GAME_PLAYING : "현재 게임 진행중",
 	MSG_MY_INFO : "당신은 {0} 입니다.",
 	MSG_WIN : "{0} 님이 승리하셨습니다.",
-	MSG_PENALTY : "{0} 님 벌칙타일 {1}개 가져갑니다."
+	MSG_PENALTY : "{0} 님 벌칙타일 {1}개 가져갑니다.",
+	MSG_REGISTER : "(등록완료)",
+	MSG_UNREGISTER : "(미등록)",
+	MSG_REMAIN_TILES : "남은 타일 {0}개"
 };
 
 var UTIL = {

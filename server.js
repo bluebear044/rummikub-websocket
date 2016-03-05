@@ -21,7 +21,6 @@ console.log("websocket server created");
 
 //static variable
 var rummikub = new Rummikub();
-var connectCount = 0;
 var gamePlayingFlag = false;
 var turnCount = 1;
 var currentPlayer = {};
@@ -49,7 +48,6 @@ webSocketServer.on("connection", function(ws) {
 
     var user = new User("GUEST_" + UTIL.random4digit(), ws);
     rummikub.users.push(user);
-    connectCount++;
 
     processJoin(user);
     
@@ -87,11 +85,11 @@ webSocketServer.on("connection", function(ws) {
     })
 
     function boardInfo() {
-        return {
-            "connectCount" : connectCount, 
+        return { 
             "gamePlayingFlag" : gamePlayingFlag, 
             "turnCount" : turnCount, 
-            "currentPlayerID" : currentPlayer.id
+            "currentPlayerID" : currentPlayer.id,
+            "usersInfo" : usersInfo()
         };
     }
 
@@ -102,6 +100,17 @@ webSocketServer.on("connection", function(ws) {
             "use" : user.use,
             "own" : user.own
         };
+    }
+
+    function usersInfo() {
+
+        var usersInfo = [];
+
+        for (var i in rummikub.users) {
+            usersInfo.push(userInfo(rummikub.users[i]));
+        }
+
+        return usersInfo;
     }
 
     function userScoreInfo() {
@@ -170,7 +179,7 @@ webSocketServer.on("connection", function(ws) {
 
             if(tile != null) {
                 if(tile.isOwn == true) {
-                    user.addUseTile(tile);
+                    user.use.push(tile);
                     user.removeOwnTile(tile);    
                 }
             }
@@ -178,22 +187,29 @@ webSocketServer.on("connection", function(ws) {
           }
         }
 
-        console.log("\n\n\n");
-        console.log("====================================================");
-        console.log(user.toString());
-        console.log("====================================================");
-        console.log("\n\n\n");
+        //console.log("\n\n\n");
+        //console.log("====================================================");
+        //console.log(user.toString());
+        //console.log("====================================================");
+        //console.log("\n\n\n");
 
         // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
         if(user.use.length == 0) {
-            webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_ONE)), user.id);
-            webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_ONE) ));
+
+            processPenalty(user, BOARD.PENALTY_ONE);
+
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
             if(rummikub.validateTile(param)) {
                 // 등록 된 사용자인 경우
                 if(user.registerYN) {
+
+                    console.log("\n\n\n");
+                    console.log("====================================================");
+                    console.log(user.own);
+                    console.log("====================================================");
+                    console.log("\n\n\n");
 
                     // ownBoard의 타일이 모두 없어졌으면 게임 종료
                     if(user.own.length == 0) {
@@ -206,16 +222,18 @@ webSocketServer.on("connection", function(ws) {
                     if(user.validateRegisterTile()) {
                         user.registerYN = true;
                     }else {
-                        webSocketServer.sendMessage(UTIL.makeCommand( CMD.ROLLBACK, user.use), user.id);
-                        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id);
-                        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
+
+                        processRollback(user);
+
+                        processPenalty(user, BOARD.PENALTY_THREE);
                     }
                 }
 
             }else {
-                webSocketServer.sendMessage(UTIL.makeCommand( CMD.ROLLBACK, user.use), user.id);
-                webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, rummikub.penaltyTile(BOARD.PENALTY_THREE)), user.id); 
-                webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, BOARD.PENALTY_THREE) ));
+
+                processRollback(user);
+
+                processPenalty(user, BOARD.PENALTY_THREE);
             }
 
         }
@@ -230,6 +248,22 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
     }
+
+    function processRollback(user) {
+        //사용했던 타일은 다시 own으로 복귀
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.ROLLBACK, user.use), user.id);
+        user.own = user.own.concat(user.use);
+   }
+
+    function processPenalty(user, numberOfPenaltyTile) {
+        var penaltyTiles = rummikub.penaltyTile(numberOfPenaltyTile);
+
+        //패널티 타일은 다시 own으로 추가
+        user.own = user.own.concat(penaltyTiles);
+
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, penaltyTiles), user.id); 
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, numberOfPenaltyTile) ));
+   }
 
     function processExit() {
         gamePlayingFlag = false;
@@ -261,10 +295,10 @@ webSocketServer.on("connection", function(ws) {
 
         //client & connect count delete        
         rummikub.removeUser(user.id);
-        connectCount--;
         turnCount = 1;
 
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_DISCONNECT, user.id) ));
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
         if(gamePlayingFlag == true) {
             processExit();
