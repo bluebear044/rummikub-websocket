@@ -297,7 +297,7 @@ var Game = {
       }else {
         $( "#gameBtn" ).attr("disabled", true);
         Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
-        Redips.enableDrag(BOARD.OWN_BOARD_ID, false);
+        Redips.enableDrag(BOARD.OWN_BOARD_ID, true); // 턴이 종료되어도 own보드의 타일은 움직일 수 있도록 처리
       }
     }
 
