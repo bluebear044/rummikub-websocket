@@ -191,7 +191,7 @@ webSocketServer.on("connection", function(ws) {
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
-            if(user.validateTile(param)) {
+            if(rummikub.validateTile(param)) {
                 // 등록 된 사용자인 경우
                 if(user.registerYN) {
 

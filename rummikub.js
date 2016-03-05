@@ -69,37 +69,7 @@ Rummikub.prototype.penaltyTile = function(numberOfPenaltyTile) {
 	return penaltyTile;
 };
 
-//User class
-function User (id, ownWebsocket) {
-	this.ownWebsocket = ownWebsocket; // each users websocket
-	this.id = id;
-	this.registerYN = false;
-	this.use = [];
-	this.own = [];
-}	
-
-User.prototype.addUseTile = function(tile) {
-	this.use.push(tile);
-};
-
-User.prototype.removeOwnTile = function(tile) {
-
-	var removeIndex;
-
-	for(var idx in this.own) {
-		if(	tile.score == this.own[idx].score &&
-			tile.color == this.own[idx].color &&
-			tile.isJoker == this.own[idx].isJoker) {
-			removeIndex = idx;
-			break;
-		}
-	}
-	
-	this.own.splice(removeIndex,1);
-
-};
-
-User.prototype.validateTile = function(param) {
+Rummikub.prototype.validateTile = function(param) {
 
 	var group = [];
       
@@ -175,7 +145,7 @@ User.prototype.validateTile = function(param) {
 
 };
 
-User.prototype.validateSerialNumber = function(param) {
+Rummikub.prototype.validateSerialNumber = function(param) {
 
   //clone param
   var group = this.clone(param);
@@ -221,7 +191,7 @@ User.prototype.validateSerialNumber = function(param) {
 
 }
 
-User.prototype.validateSameNumber = function(param) {
+Rummikub.prototype.validateSameNumber = function(param) {
 
   //clone param
   var group = this.clone(param);
@@ -265,29 +235,7 @@ User.prototype.validateSameNumber = function(param) {
 
 }
 
-User.prototype.validateRegisterTile = function() {
-
-	if(this.use.length < 3) {
-		return false
-	}
-	
-	var sumOfScore = 0;
-	for(var idx in this.use) {
-		sumOfScore += Number(this.use[idx].score);
-	}
-
-	return (sumOfScore >= 30) ? true : false;
-
-};
-
-User.prototype.toString = function() {
-	return "id : " + this.id
-	+ " registerYN : " + this.registerYN 
-	+ " use : " + JSON.stringify(this.use) 
-	+ " own : " + JSON.stringify(this.own);
-};
-
-User.prototype.clone = function(obj) {
+Rummikub.prototype.clone = function(obj) {
 
 	// Handle the 3 simple types, and null or undefined
 	if (null == obj || "object" != typeof obj) return obj;
@@ -318,6 +266,58 @@ User.prototype.clone = function(obj) {
 	}
 
 	throw new Error("Unable to copy obj! Its type isn't supported.");
+};
+
+//User class
+function User (id, ownWebsocket) {
+	this.ownWebsocket = ownWebsocket; // each users websocket
+	this.id = id;
+	this.registerYN = false;
+	this.use = [];
+	this.own = [];
+}	
+
+User.prototype.addUseTile = function(tile) {
+	this.use.push(tile);
+};
+
+User.prototype.removeOwnTile = function(tile) {
+
+	var removeIndex;
+
+	for(var idx in this.own) {
+		if(	tile.score == this.own[idx].score &&
+			tile.color == this.own[idx].color &&
+			tile.isJoker == this.own[idx].isJoker) {
+			removeIndex = idx;
+			break;
+		}
+	}
+	
+	this.own.splice(removeIndex,1);
+
+};
+
+User.prototype.validateRegisterTile = function() {
+
+	if(this.use.length < 3) {
+		return false
+	}
+	
+	var sumOfScore = 0;
+	for(var idx in this.use) {
+		sumOfScore += Number(this.use[idx].score);
+	}
+
+	return (sumOfScore >= 30) ? true : false;
+
+};
+
+User.prototype.toString = function() {
+	return "id : " + this.id
+	+ " registerYN : " + this.registerYN 
+	+ " use : " + JSON.stringify(this.use) 
+	+ " own : " + JSON.stringify(this.own);
 };
 
 //Tile class
