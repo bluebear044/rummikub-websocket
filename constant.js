@@ -8,7 +8,9 @@ var BOARD = {
 	OWN_BOARD_ID : "ownBoard",
 	PENALTY_ONE : 1,
 	PENALTY_THREE : 3,
-	MESSAGE_COLOR : "#AEC6CF"
+	MESSAGE_COLOR : "#AEC6CF",
+	TIMER_SEC : 60,
+	TIMER_LIMIT : 10
 }
 
 var CMD = {
@@ -43,7 +45,8 @@ var MESSAGE = {
 	MSG_PENALTY : "{0} 님 벌칙타일 {1}개 가져갑니다.",
 	MSG_REGISTER : "(등록완료)",
 	MSG_UNREGISTER : "(미등록)",
-	MSG_REMAIN_TILES : "남은 타일 {0}개"
+	MSG_REMAIN_TILES : "남은 타일 {0}개",
+	MSG_TIMER : "턴종료까지 {0} 초 남았습니다."
 };
 
 var UTIL = {

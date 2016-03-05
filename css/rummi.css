@@ -6,7 +6,7 @@ span.circle {font-size: 25px; font-weight: bold; border-radius: 20px; width: 40p
 span.red {border: 2px solid #F5F5DC; color: #DC143C}
 span.blue {border: 2px solid #F5F5DC; color: #0000CD}
 span.black {border: 2px solid #F5F5DC; color: #000000}
-span.yellow {border: 2px solid #F5F5DC; color: #FFFF33}
+span.yellow {border: 2px solid #F5F5DC; color: #EEAD0E}
 span.jo_eye {width: 10px; height: 10px; border-radius: 50%; box-shadow: 2px 2px 0 0 #DC143C; display: block; float: left; margin: 0 7px; -webkit-transform: rotate(-135deg);
 -moz-transform: rotate(-135deg);
  -ms-transform: rotate(-135deg);
@@ -98,4 +98,12 @@ tr + tr { border-top: 1px solid white; }
 /*For jquery ui dialog*/
 .ui-dialog-titlebar {
     display: none;
+}
+
+#sandGlass {
+  color: #0000CD;
+}
+
+#sandGlass .alert {
+  color: #DC143C;
 }

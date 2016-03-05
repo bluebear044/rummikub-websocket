@@ -14,6 +14,7 @@ switch(window.location.protocol) {
 
 var ws;
 var user={};
+var timer;
 
 var Game = {
 
@@ -62,7 +63,6 @@ var Game = {
         }else if(responseObject.command == CMD.SYNC) {
 
           Game.processSync(responseObject.param);
-          Sound.playEffect("cardPlace");
 
         }else if(responseObject.command == CMD.CHAT) {
 
@@ -538,26 +538,28 @@ var Game = {
 
   sandGlassTrigger: function(enable) {
 
-    /*
-
-    var timer;
-
+    var sec = BOARD.TIMER_SEC;
     if(enable) {
+      
+      timer = window.setInterval(function(){
 
-      timer = setTimeout(Game.timerAction(), 5000);
+        if(sec == 0) {
+          Game.nextTurn(ws);
+        }else if(sec < BOARD.TIMER_LIMIT) {
+          Sound.playEffect("alert");
+          $("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");
+        }else {
+          $("#sandGlass").html(UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)));
+        }
+        sec--;
 
-
-      $("#sandGlass").html("aaaaaa");
+      }, 1000);
 
     }else {
-      clearTimeout(timer);
+      $("#sandGlass").html("");
+      window.clearInterval(timer);
     }
-    */
     
-  },
-
-  timerAction: function() {
-    alert("aa");
   }
 
 };
@@ -571,6 +573,7 @@ var Redips = {
     //REDIPS Dropped Event
     REDIPS.drag.event.dropped = function () {
       Game.syncBoard();
+      Sound.playEffect("cardPlace");
     };
   },
 
