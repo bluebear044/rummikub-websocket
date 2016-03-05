@@ -41,7 +41,7 @@ Rummikub.prototype.initializeTiles = function() {
 Rummikub.prototype.initializeTilesToUser = function(user) {
 	user.own = [];
 	for(var idx=0; idx < 14; idx++) {
-  		user.own[idx] = this.tiles.pop();
+  		user.own.push(this.tiles.pop());
 	}
 };
 
@@ -63,7 +63,7 @@ Rummikub.prototype.penaltyTile = function(numberOfPenaltyTile) {
 
 	var penaltyTile = [];
 	for(var idx=0; idx < numberOfPenaltyTile; idx++) {
-  		penaltyTile[idx] = this.tiles.pop();
+  		penaltyTile.push(this.tiles.pop());
 	}
 
 	return penaltyTile;
