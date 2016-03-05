@@ -293,11 +293,21 @@ webSocketServer.on("connection", function(ws) {
 
     function processChat(message) {
 
-        var obj = {};
-        obj.text = user.id + " : " + message;
-        obj.color = user.chatColor;
+        if(message.indexOf(INLINE_CMD.HELP) == 0 ) {
 
-        webSocketServer.broadcast(UTIL.makeCommand(CMD.CHAT, obj));
+            processHelp(message);
+
+        }else if(message.indexOf(INLINE_CMD.CHANGE_NAME) == 0 ) {
+
+            processChangeName(message);
+        
+        }else {
+            var obj = {};
+            obj.text = user.id + " : " + message;
+            obj.color = user.chatColor;
+            webSocketServer.broadcast(UTIL.makeCommand(CMD.CHAT, obj));          
+        }
+
     }
 
     function processDisconnect(user) {
@@ -314,6 +324,22 @@ webSocketServer.on("connection", function(ws) {
             processExit();
         }
         
+    }
+
+    function processHelp(param){
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_HELP) ), user.id);
+    } 
+
+    function processChangeName(param){
+
+        var newName = param.split(" ")[1];
+        var originName = user.id;
+
+        //change user id
+        user.id = newName;
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_CHANGE_NAME, originName, newName) ));
+        webSocketServer.sendMessage(UTIL.makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
     }
 
 })

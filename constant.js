@@ -29,10 +29,15 @@ var CMD = {
 	WIN : "::WIN::"
 };
 
+var INLINE_CMD = {
+	"HELP" : "/?",
+	"CHANGE_NAME" : "/이름"
+};
+
 var MESSAGE = {
 	MSG_BTN_START : "게임시작",
 	MSG_BTN_NEXT_TURN : "턴종료",
-	MSG_START : "게임이 시작되었습니다.",
+	MSG_START : "게임이 시작되었습니다.<br/>======================<br/><br/>Rummikub 도움말을 보고 싶으시면 <span style=\"color:Gold;\">/?</span>을 입력하세요.<br /><br />======================<br/><br/>",
 	MSG_EXIT : "게임이 종료되었습니다.",
 	MSG_TURN : "{0} 님이 턴을 종료하였습니다.",
 	MSG_NEXT_TURN : "{0} 님 차례 입니다.",
@@ -48,7 +53,9 @@ var MESSAGE = {
 	MSG_REGISTER : "(등록완료)",
 	MSG_UNREGISTER : "(미등록)",
 	MSG_REMAIN_TILES : "남은 타일 {0}개",
-	MSG_TIMER : "턴종료까지 {0} 초 남았습니다."
+	MSG_TIMER : "턴종료까지 {0} 초 남았습니다.",
+	MSG_HELP : "<span style=\"color:Gold;\"><br />======================<br/><br/>Rummikub 도움말<br/><br/>*게임방법*<br/>연속된 숫자이면서 같은색의 타일 혹은 같은 숫자이면서 서로 다른색의 타일을 최소3개씩 그룹지어 모두 내려놓으면 승리하는 게임입니다.<br/><br/>*단축명령어*<br/>/? : 도움말<br/>/이름 [이름] : 이름변경<br/><br/>======================<br/><br/></span>",
+	MSG_CHANGE_NAME : "{0}님이 {1}로 아이디가 바뀌었습니다."
 };
 
 var UTIL = {
@@ -89,9 +96,7 @@ var UTIL = {
     },
 
     randomChatColor: function() {
-
     	return BOARD.CHAT_COLOR[Math.floor(Math.random() * BOARD.CHAT_COLOR.length)];
-
     }
 
 }
