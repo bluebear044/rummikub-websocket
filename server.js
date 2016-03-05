@@ -49,7 +49,7 @@ webSocketServer.sendMessage = function(data, id) {
 //connect client
 webSocketServer.on("connection", function(ws) {
 
-    var user = new User("GUEST_" + UTIL.random4digit(), ws);
+    var user = new User("GUEST_" + UTIL.random4digit(), ws, UTIL.randomChatColor());
     rummikub.users.push(user);
 
     processJoin(user);
@@ -290,7 +290,12 @@ webSocketServer.on("connection", function(ws) {
     }
 
     function processChat(message) {
-        webSocketServer.broadcast(UTIL.makeCommand(CMD.CHAT, user.id + " : " + message));
+
+        var obj = {};
+        obj.text = user.id + " : " + message;
+        obj.color = user.chatColor;
+
+        webSocketServer.broadcast(UTIL.makeCommand(CMD.CHAT, obj));
     }
 
     function processDisconnect(user) {

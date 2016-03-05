@@ -22,11 +22,16 @@ td {
 	width: 50px;
   height: 80px;
 }
+
 /* 
 td + td,
 th + th { border-left: 1px solid white; }
 tr + tr { border-top: 1px solid white; }
 */
+
+#gameBoard td + td,
+#gameBoard tr + tr { padding-top: 5px; padding-bottom: 5px; }
+
 #gameBoard {
   border: 1px solid white;
   table-layout:fixed;
@@ -63,8 +68,7 @@ tr + tr { border-top: 1px solid white; }
   right: 0;
   width: 220px;
   height: 100%;
-  background-color: black;
-  opacity: 0.5;
+  background: rgba(25, 25, 25, .5);
 }
 
 .sendBox {

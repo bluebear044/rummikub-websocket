@@ -67,9 +67,6 @@ var Game = {
         }else if(responseObject.command == CMD.CHAT) {
 
           Game.processChat(responseObject.param);
-          if(responseObject.param.indexOf(" : ") > -1) {
-            Sound.playEffect("chat");
-          }
 
         }else {
           // nothing happen
@@ -162,6 +159,9 @@ var Game = {
   },
 
   nextTurn: function(ws) {
+
+      Game.sandGlassTrigger(false);
+
       var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
       //console.log(JSON.stringify(boardSerializeMap));
       ws.send(JSON.stringify( UTIL.makeCommand(CMD.TURN, boardSerializeMap) ));
@@ -340,8 +340,9 @@ var Game = {
 
   processChat: function(message) {
 
-    if(message.indexOf(" : ") > -1) {
-      $("#messages").append("<p>"+message+"</p>");
+    if (message instanceof Object) {
+      $("#messages").append("<p style='color:"+message.color+"'>"+message.text+"</p>");
+      Sound.playEffect("chat");
     }else{
       $("#messages").append("<p style='color:"+BOARD.MESSAGE_COLOR+"'>"+message+"</p>");
     }
@@ -489,7 +490,7 @@ var Game = {
 
       //기준좌표
       var standX = Number(1);
-      var standY = Number(6);
+      var standY = Number(7);
 
       Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("R", "red", false), standX, standY);
       Game.settingTile("#"+BOARD.GAME_BOARD_ID, new Tile("U", "red", false), standX, standY+1);
@@ -539,13 +540,16 @@ var Game = {
   sandGlassTrigger: function(enable) {
 
     var sec = BOARD.TIMER_SEC;
+
     if(enable) {
       
+      window.clearInterval(timer);
+
       timer = window.setInterval(function(){
 
         if(sec == 0) {
           Game.nextTurn(ws);
-        }else if(sec < BOARD.TIMER_LIMIT) {
+        }else if(sec < BOARD.TIMER_LIMIT && sec > 0) {
           Sound.playEffect("alert");
           $("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");
         }else {

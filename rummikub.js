@@ -87,14 +87,14 @@ Rummikub.prototype.validateTile = function(param) {
 		    continue;
 		  }
 
-		  //console.log("========= group info ========");
-		  //console.log(group);
-		  //console.log("=============================");
+		  console.log("\n\n\n========= group info ========");
+		  console.log(group);
+		  console.log("=============================");
 
 		  var serialNumberValidateResult = this.validateSerialNumber(group);
 		  var sameNumverValidateResult = this.validateSameNumber(group);
 
-		  console.log("check serialNumberValidateResult ---->  " + serialNumberValidateResult);
+		  console.log("\ncheck serialNumberValidateResult ---->  " + serialNumberValidateResult);
 		  console.log("check sameNumverValidateResult ----> " + sameNumverValidateResult);
 
 		  if(serialNumberValidateResult || sameNumverValidateResult) {
@@ -169,7 +169,8 @@ Rummikub.prototype.validateSerialNumber = function(param) {
 
   }
 
-  //cnsole.log(group);
+  console.log("\nvalidateSerialNumber after joker");
+  console.log(group);
 
   var colorSet = new Set();
 
@@ -215,7 +216,8 @@ Rummikub.prototype.validateSameNumber = function(param) {
 
   }
 
-  //console.log(group);
+  console.log("\nvalidateSameNumber after joker");
+  console.log(group);
 
   var colorSet = new Set();
   var colorSetNotDuplicated = new Array();
@@ -273,12 +275,13 @@ Rummikub.prototype.clone = function(obj) {
 };
 
 //User class
-function User (id, ownWebsocket) {
+function User (id, ownWebsocket, chatColor) {
 	this.ownWebsocket = ownWebsocket; // each users websocket
 	this.id = id;
 	this.registerYN = false;
 	this.use = [];
 	this.own = [];
+	this.chatColor = chatColor;
 }	
 
 User.prototype.removeOwnTile = function(tile) {

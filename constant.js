@@ -1,8 +1,8 @@
 //constant
 var BOARD = {
-	WIDTH : 20,
+	WIDTH : 22,
 	HEIGHT : 6,
-	OWN_WIDTH : 20,
+	OWN_WIDTH : 22,
 	OWN_HEIGHT : 2,
 	GAME_BOARD_ID : "gameBoard",
 	OWN_BOARD_ID : "ownBoard",
@@ -10,7 +10,8 @@ var BOARD = {
 	PENALTY_THREE : 3,
 	MESSAGE_COLOR : "#AEC6CF",
 	TIMER_SEC : 60,
-	TIMER_LIMIT : 10
+	TIMER_LIMIT : 10,
+	CHAT_COLOR : ["Aqua", "Tomato", "Turquoise", "Yellow", "HotPink", "Chartreuse"]
 }
 
 var CMD = {
@@ -84,6 +85,12 @@ var UTIL = {
 
     random4digit: function() {
     	return Math.floor(Math.random()*9000) + 1000;
+    },
+
+    randomChatColor: function() {
+
+    	return BOARD.CHAT_COLOR[Math.floor(Math.random() * BOARD.CHAT_COLOR.length)];
+
     }
 
 }
