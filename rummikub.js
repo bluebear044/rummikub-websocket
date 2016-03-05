@@ -23,9 +23,13 @@ Rummikub.prototype.initializeGame = function() {
 	for(var idx in this.users) {
   		this.initializeTilesToUser(this.users[idx]);
 	}
-}
+};
 
 Rummikub.prototype.initializeTiles = function() {
+	
+	//init
+	this.tiles = [];
+
 	for(var i in this.colors) {
 	  for(var j in this.scores) {
 	  	this.tiles.push(new Tile(this.scores[j], this.colors[i], false));
