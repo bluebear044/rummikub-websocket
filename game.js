@@ -538,6 +538,8 @@ var Game = {
 
   sandGlassTrigger: function(enable) {
 
+    /*
+
     var timer;
 
     if(enable) {
@@ -550,6 +552,7 @@ var Game = {
     }else {
       clearTimeout(timer);
     }
+    */
     
   },
 
