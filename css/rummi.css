@@ -3,16 +3,16 @@ body {width: 100%; height: 100%;}
 /*.group {overflow: hidden; width: 1320px;}*/
 .card {cursor: pointer; border: 1px solid #ACACAC; border-radius: 4px; width: 50px; height: 80px; background: #E5DCC7; padding: 10px 0 0 0; overflow: hidden; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; float: left;}
 span.circle {font-size: 25px; font-weight: bold; border-radius: 20px; width: 40px; display: block; text-align: center; margin: 0 auto; padding: 8px 0; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
-span.red {border: 2px solid #f00;}
-span.blue {border: 2px solid #00f;}
-span.black {border: 2px solid #000;}
-span.yellow {border: 2px solid #ff0;}
-span.jo_eye {width: 10px; height: 10px; border-radius: 50%; box-shadow: 2px 2px 0 0 #f00; display: block; float: left; margin: 0 7px; -webkit-transform: rotate(-135deg);
+span.red {border: 2px solid #F5F5DC; color: #DC143C}
+span.blue {border: 2px solid #F5F5DC; color: #0000CD}
+span.black {border: 2px solid #F5F5DC; color: #000000}
+span.yellow {border: 2px solid #F5F5DC; color: #FFFF00}
+span.jo_eye {width: 10px; height: 10px; border-radius: 50%; box-shadow: 2px 2px 0 0 #DC143C; display: block; float: left; margin: 0 7px; -webkit-transform: rotate(-135deg);
 -moz-transform: rotate(-135deg);
  -ms-transform: rotate(-135deg);
   -o-transform: rotate(-135deg);
      transform: rotate(-135deg);}
-span.jo_mouth {width: 30px; height: 30px; border-radius: 50%; box-shadow: 4px 4px 0 0 #f00; -webkit-transform: rotate(45deg);
+span.jo_mouth {width: 30px; height: 30px; border-radius: 50%; box-shadow: 4px 4px 0 0 #DC143C; -webkit-transform: rotate(45deg);
 -moz-transform: rotate(45deg);
  -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
