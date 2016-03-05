@@ -8,10 +8,11 @@ var BOARD = {
 	OWN_BOARD_ID : "ownBoard",
 	PENALTY_ONE : 1,
 	PENALTY_THREE : 3,
-	MESSAGE_COLOR : "#AEC6CF",
+	MESSAGE_COLOR : "White",
 	TIMER_SEC : 60,
 	TIMER_LIMIT : 10,
-	CHAT_COLOR : ["Aqua", "Tomato", "Turquoise", "Yellow", "HotPink", "Chartreuse"]
+	CHAT_COLOR : ["Aqua", "Turquoise", "Yellow", "Lime", "Chartreuse", "Violet", "Gold", "Orange"],
+	USER_PREFIX : "USER_"
 }
 
 var CMD = {

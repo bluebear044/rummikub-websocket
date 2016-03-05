@@ -27,10 +27,11 @@ var rummikub = new Rummikub();
 var gamePlayingFlag = false;
 var turnCount = 1;
 var currentPlayer = {};
+var lastSyncTiles = [];
 
 //broadcast client
 webSocketServer.broadcast = function(data) {
-    console.log("[broadcast msg]=" + JSON.stringify(data));
+    //console.log("[broadcast msg]=" + JSON.stringify(data));
     for (var i in rummikub.users) {
         rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
     }
@@ -38,7 +39,7 @@ webSocketServer.broadcast = function(data) {
 
 //send specific client
 webSocketServer.sendMessage = function(data, id) {
-    console.log("[send msg -> " + id + "]=" + JSON.stringify(data));
+    //console.log("[send msg -> " + id + "]=" + JSON.stringify(data));
     for (var i in rummikub.users) {
         if(id == rummikub.users[i].id) {
             rummikub.users[i].ownWebsocket.send(JSON.stringify(data));
@@ -49,7 +50,7 @@ webSocketServer.sendMessage = function(data, id) {
 //connect client
 webSocketServer.on("connection", function(ws) {
 
-    var user = new User("GUEST_" + UTIL.random4digit(), ws, UTIL.randomChatColor());
+    var user = new User(BOARD.USER_PREFIX + UTIL.random4digit(), ws, UTIL.randomChatColor());
     rummikub.users.push(user);
 
     processJoin(user);
@@ -59,7 +60,8 @@ webSocketServer.on("connection", function(ws) {
 
         var requestObject = JSON.parse(message);
 
-        console.log("[Message Received] Command : " + requestObject.command + " Param : " + requestObject.param);
+        //console.log("[Message Received] Command : " + requestObject.command + " Param : " + requestObject.param);
+        console.log("[Message Received] Command : " + requestObject.command);
         
         if(requestObject.command == CMD.START) {
 
@@ -171,6 +173,9 @@ webSocketServer.on("connection", function(ws) {
     }
 
     function processTurn(param, user) {
+
+        var validateResult = false;
+
         turnCount++;
         // select next turn player
         currentPlayer = rummikub.users[turnCount % rummikub.users.length];
@@ -190,17 +195,9 @@ webSocketServer.on("connection", function(ws) {
           }
         }
 
-        //console.log("\n\n\n");
-        //console.log("====================================================");
-        //console.log(user.toString());
-        //console.log("====================================================");
-        //console.log("\n\n\n");
-
         // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
         if(user.use.length == 0) {
-
             processPenalty(user, BOARD.PENALTY_ONE);
-
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
@@ -208,11 +205,9 @@ webSocketServer.on("connection", function(ws) {
                 // 등록 된 사용자인 경우
                 if(user.registerYN) {
 
-                    console.log("\n\n\n");
-                    console.log("====================================================");
-                    console.log(user.own);
-                    console.log("====================================================");
-                    console.log("\n\n\n");
+                    //console.log("\n\n\n========= user own ========");
+                    //console.log(user.own);
+                    //console.log("===========================");
 
                     // ownBoard의 타일이 모두 없어졌으면 게임 종료
                     if(user.own.length == 0) {
@@ -220,22 +215,21 @@ webSocketServer.on("connection", function(ws) {
                         return;
                     }
 
+                    validateResult = true;
+
                 }else {
                     // use타일의 합이 30이 넘는지 확인
                     if(user.validateRegisterTile()) {
                         user.registerYN = true;
+                        validateResult = true;
                     }else {
-
                         processRollback(user);
-
                         processPenalty(user, BOARD.PENALTY_THREE);
                     }
                 }
 
             }else {
-
                 processRollback(user);
-
                 processPenalty(user, BOARD.PENALTY_THREE);
             }
 
@@ -250,13 +244,21 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
+        //성공적으로 turn을 마쳤을 경우
+        if(validateResult) {
+            // 마지막 성공한 sync화면 저장 (다음 processTurn 수행 시 rollback 작업에 이용)
+            lastSyncTiles = param;
+        }
+        
     }
 
     function processRollback(user) {
         //사용했던 타일은 다시 own으로 복귀
         webSocketServer.sendMessage(UTIL.makeCommand( CMD.ROLLBACK, user.use), user.id);
         user.own = user.own.concat(user.use);
-   }
+        //마지막 성공한 sync화면 불러오기
+        processSync(lastSyncTiles);
+    }
 
     function processPenalty(user, numberOfPenaltyTile) {
         var penaltyTiles = rummikub.penaltyTile(numberOfPenaltyTile);
@@ -266,7 +268,7 @@ webSocketServer.on("connection", function(ws) {
 
         webSocketServer.sendMessage(UTIL.makeCommand( CMD.PENALTY, penaltyTiles), user.id); 
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, numberOfPenaltyTile) ));
-   }
+    }
 
     function processExit() {
         gamePlayingFlag = false;

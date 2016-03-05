@@ -15,6 +15,7 @@ switch(window.location.protocol) {
 var ws;
 var user={};
 var timer;
+var sec;
 
 var Game = {
 
@@ -200,9 +201,6 @@ var Game = {
 
   processRollback: function(param) {
 
-    Game.clearUseTile();
-    Game.syncBoard(); //rollback 작업이 broadcast가 아니기 때문에 타일 정리 후 sync 한번 호출
-
     for(var idx in param) {
         var position = Game.getEmptySpaceTablePosition("#"+BOARD.OWN_BOARD_ID, BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
         param[idx].isOwn = true;
@@ -239,6 +237,7 @@ var Game = {
 
   processExit: function() {
 
+      Game.sandGlassTrigger(false);
       Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
       Game.clearBoard("#"+BOARD.OWN_BOARD_ID);
       Game.introBoard();
@@ -305,7 +304,8 @@ var Game = {
 
         $( "#gameBtn" ).attr("disabled", true);
         Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
-        Redips.enableDrag(BOARD.OWN_BOARD_ID, true); // 턴이 종료되어도 own보드의 타일은 움직일 수 있도록 처리
+        //Redips.enableDrag(BOARD.OWN_BOARD_ID, true); // 턴이 종료되어도 own보드의 타일은 움직일 수 있도록 처리
+        Redips.enableDrag(BOARD.OWN_BOARD_ID, false);
       }
     }
 
@@ -514,22 +514,6 @@ var Game = {
 
   },
 
-  clearUseTile: function() {
-
-    var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
-    for(var i=0; i<BOARD.HEIGHT; i++) {
-      for(var j=0; j<BOARD.WIDTH; j++) {
-        var tile = boardSerializeMap[(i*BOARD.WIDTH)+j];
-
-        if(tile != null && tile.isOwn == true) {
-          Game.settingTileHtml("#"+BOARD.GAME_BOARD_ID, "", i, j);
-        }
-        
-      }
-    }
-
-  },
-
   openDialog: function(html, callback) {
     $("#dialog").dialog({
       close: callback
@@ -539,14 +523,12 @@ var Game = {
 
   sandGlassTrigger: function(enable) {
 
-    var sec = BOARD.TIMER_SEC;
-
     if(enable) {
-      
+
+      sec = BOARD.TIMER_SEC;
       window.clearInterval(timer);
 
       timer = window.setInterval(function(){
-
         if(sec == 0) {
           Game.nextTurn(ws);
         }else if(sec < BOARD.TIMER_LIMIT && sec > 0) {
@@ -556,7 +538,6 @@ var Game = {
           $("#sandGlass").html(UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)));
         }
         sec--;
-
       }, 1000);
 
     }else {
@@ -572,7 +553,8 @@ var Redips = {
   initialize: function() {
     
     //REDIPS.drag.init(); //처음부터 타일 움직이지 못하도록 초기화 하지 않음
-    REDIPS.drag.dropMode = 'single';
+    REDIPS.drag.dropMode = "single";
+    REDIPS.drag.hover.colorTd = "";
 
     //REDIPS Dropped Event
     REDIPS.drag.event.dropped = function () {

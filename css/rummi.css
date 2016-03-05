@@ -3,10 +3,10 @@ body {width: 100%; height: 100%;}
 /*.group {overflow: hidden; width: 1320px;}*/
 .card {cursor: pointer; border: 1px solid #ACACAC; border-radius: 4px; width: 50px; height: 80px; background: #E5DCC7; padding: 10px 0 0 0; overflow: hidden; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; float: left;}
 span.circle {font-size: 25px; font-weight: bold; border-radius: 20px; width: 40px; display: block; text-align: center; margin: 0 auto; padding: 8px 0; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
-span.red {border: 2px solid #F5F5DC; color: #DC143C}
-span.blue {border: 2px solid #F5F5DC; color: #0000CD}
-span.black {border: 2px solid #F5F5DC; color: #000000}
-span.yellow {border: 2px solid #F5F5DC; color: #EEAD0E}
+span.red {border: 2px solid #DC143C; color: #DC143C}
+span.blue {border: 2px solid #0000CD; color: #0000CD}
+span.black {border: 2px solid #000000; color: #000000}
+span.yellow {border: 2px solid #EEAD0E; color: #EEAD0E}
 span.jo_eye {width: 10px; height: 10px; border-radius: 50%; box-shadow: 2px 2px 0 0 #DC143C; display: block; float: left; margin: 0 7px; -webkit-transform: rotate(-135deg);
 -moz-transform: rotate(-135deg);
  -ms-transform: rotate(-135deg);
