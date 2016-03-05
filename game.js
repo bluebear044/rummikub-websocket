@@ -542,19 +542,19 @@ var Game = {
 
     if(enable) {
 
-      timer = setTimeout(Game.timerAction, 1000);
+      timer = setTimeout(Game.timerAction(), 5000);
 
 
       $("#sandGlass").html("aaaaaa");
 
     }else {
-      timer
+      clearTimeout(timer);
     }
     
   },
 
   timerAction: function() {
-
+    alert("aa");
   }
 
 };
