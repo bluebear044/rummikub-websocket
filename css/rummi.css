@@ -6,13 +6,13 @@ span.circle {font-size: 25px; font-weight: bold; border-radius: 20px; width: 40p
 span.red {border: 2px solid #F5F5DC; color: #DC143C}
 span.blue {border: 2px solid #F5F5DC; color: #0000CD}
 span.black {border: 2px solid #F5F5DC; color: #000000}
-span.yellow {border: 2px solid #F5F5DC; color: #FFFF00}
+span.yellow {border: 2px solid #F5F5DC; color: #FFFF33}
 span.jo_eye {width: 10px; height: 10px; border-radius: 50%; box-shadow: 2px 2px 0 0 #DC143C; display: block; float: left; margin: 0 7px; -webkit-transform: rotate(-135deg);
 -moz-transform: rotate(-135deg);
  -ms-transform: rotate(-135deg);
   -o-transform: rotate(-135deg);
      transform: rotate(-135deg);}
-span.jo_mouth {width: 30px; height: 30px; border-radius: 50%; box-shadow: 4px 4px 0 0 #DC143C; -webkit-transform: rotate(45deg);
+span.jo_mouth {width: 20px; height: 20px; border-radius: 60%; box-shadow: 4px 4px 0 0 #DC143C; -webkit-transform: rotate(45deg);
 -moz-transform: rotate(45deg);
  -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);

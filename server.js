@@ -4,6 +4,9 @@ var express = require("express")
 var app = express()
 var port = process.env.PORT || 5000
 
+//es6
+var Set = require("es6-set");
+
 //constant
 var fs = require('fs');
 eval(fs.readFileSync('./constant.js')+'');

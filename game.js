@@ -291,10 +291,18 @@ var Game = {
     if(param.gamePlayingFlag == true ) {
       //Active/Deactive turn button
       if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
+
+        //내 차례인 경우 sandGlass trigger
+        Game.sandGlassTrigger(true);
+
         $( "#gameBtn" ).attr("disabled", false);
         Redips.enableDrag(BOARD.GAME_BOARD_ID, true);
         Redips.enableDrag(BOARD.OWN_BOARD_ID, true);
       }else {
+
+        //내 차례가 아닌 경우 sandGlass trigger 중지
+        Game.sandGlassTrigger(false);
+
         $( "#gameBtn" ).attr("disabled", true);
         Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
         Redips.enableDrag(BOARD.OWN_BOARD_ID, true); // 턴이 종료되어도 own보드의 타일은 움직일 수 있도록 처리
@@ -526,6 +534,27 @@ var Game = {
       close: callback
     });
     $("#dialog").html(html);
+  },
+
+  sandGlassTrigger: function(enable) {
+
+    var timer;
+
+    if(enable) {
+
+      timer = setTimeout(Game.timerAction, 1000);
+
+
+      $("#sandGlass").html("aaaaaa");
+
+    }else {
+      timer
+    }
+    
+  },
+
+  timerAction: function() {
+
   }
 
 };
