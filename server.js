@@ -323,6 +323,7 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
         if(gamePlayingFlag == true) {
+            webSocketServer.broadcast(UTIL.makeCommand( CMD.DISCONNECT, user.id ));
             processExit();
         }
         

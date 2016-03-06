@@ -26,7 +26,8 @@ var CMD = {
 	PRIVATE_INFO : "::PRIVATE_INFO::",
 	PENALTY : "::PENALTY::",
 	ROLLBACK : "::ROLLBACK",
-	WIN : "::WIN::"
+	WIN : "::WIN::",
+	DISCONNECT : "DISCONNECT"
 };
 
 var INLINE_CMD = {
@@ -43,6 +44,7 @@ var MESSAGE = {
 	MSG_NEXT_TURN : "{0} 님 차례 입니다.",
 	MSG_JOIN : "{0} 님이 입장하셨습니다.",
 	MSG_DISCONNECT : "{0} 님이 나가셨습니다.",
+	MSG_RESTART : "게임이 재시작 됩니다.",
 	MSG_CLIENT_COUNT : "[{0}명 접속중]",
 	MSG_TURN_COUNT : "{0}번째 턴",
 	MSG_GAME_READY : "현재 게임 준비중",
@@ -54,7 +56,7 @@ var MESSAGE = {
 	MSG_UNREGISTER : "(미등록)",
 	MSG_REMAIN_TILES : "남은 타일 {0}개",
 	MSG_TIMER : "턴종료까지 {0} 초 남았습니다.",
-	MSG_HELP : "<span style=\"color:Gold;\"><br />======================<br/><br/>Rummikub 도움말<br/><br/>*게임방법*<br/>연속된 숫자이면서 같은색의 타일 혹은 같은 숫자이면서 서로 다른색의 타일을 최소3개씩 그룹지어 모두 내려놓으면 승리하는 게임입니다.<br/><br/>*단축명령어*<br/>/? : 도움말<br/>/이름 [이름] : 이름변경<br/><br/>======================<br/><br/></span>",
+	MSG_HELP : "<span style=\"color:Gold;\"><br />======================<br/><br/>Rummikub 도움말<br/><br/>*게임방법*<br/>색깔이 다른 같은 숫자3개나 4개(Group) 혹은 색깔이 같고 숫자가 연속되는 3개이상의 타일(Run)을 모두 내려놓으면 승리하는 게임입니다.<br/><br/>*단축명령어*<br/>/? : 도움말<br/>/이름 [이름] : 이름변경<br/><br/>======================<br/><br/></span>",
 	MSG_CHANGE_NAME : "{0}님이 {1}로 아이디가 바뀌었습니다."
 };
 

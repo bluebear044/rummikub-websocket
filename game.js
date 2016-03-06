@@ -53,6 +53,10 @@ var Game = {
 
           Game.processWin(responseObject.param);
 
+        }else if(responseObject.command == CMD.DISCONNECT) {
+
+          Game.processDisconnect(responseObject.param);
+
         }else if(responseObject.command == CMD.INFO) {
 
           Game.processInfo(responseObject.param);
@@ -267,6 +271,12 @@ var Game = {
       $( "#gameBtn" ).attr("disabled", false);
       Game.bindGameStartButtonEvent();
 
+  },  
+
+  processDisconnect: function(param) {
+      var html = "<p>"+ UTIL.getMessage(MESSAGE.MSG_DISCONNECT, param) +" </p>";
+      html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_RESTART) +" </p>"
+      Game.openDialog(html, null);
   },
 
   processInfo: function(param) {
