@@ -130,7 +130,7 @@ var Game = {
     $( "#gameBtn").unbind( "click" );
     $( "#gameBtn").html(MESSAGE.MSG_BTN_NEXT_TURN);
     $( "#gameBtn" ).click(function() {
-      Game.nextTurn(ws);
+      Game.nextTurn(ws, false); //isTimeout false
     });
   },
 
@@ -159,13 +159,16 @@ var Game = {
       ws.send(JSON.stringify( UTIL.makeCommand(CMD.START) ));
   },
 
-  nextTurn: function(ws) {
-
-      Game.sandGlassTrigger(false);
-
+  nextTurn: function(ws, isTimeout) {
+      
       var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
       //console.log(JSON.stringify(boardSerializeMap));
-      ws.send(JSON.stringify( UTIL.makeCommand(CMD.TURN, boardSerializeMap) ));
+
+      var param = {};
+      param.board = boardSerializeMap;
+      param.isTimeout = isTimeout;
+
+      ws.send(JSON.stringify( UTIL.makeCommand(CMD.TURN, param) ));
   },
 
   processStart: function(param) {
@@ -530,7 +533,11 @@ var Game = {
 
       timer = window.setInterval(function(){
         if(sec == 0) {
-          Game.nextTurn(ws);
+
+          $("#sandGlass").html("");
+          window.clearInterval(timer);
+          Game.nextTurn(ws, true); //isTimeout true
+
         }else if(sec < BOARD.TIMER_LIMIT && sec > 0) {
           Sound.playEffect("alert");
           $("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");

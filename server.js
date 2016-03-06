@@ -183,7 +183,7 @@ webSocketServer.on("connection", function(ws) {
         // 게임보드에 놓인 타일 중에 사용한 타일은 user.use에 추가하고 user.own에서는 제거
         for(var i=0; i<BOARD.HEIGHT; i++) {
           for(var j=0; j<BOARD.WIDTH; j++) {
-            var tile = param[(i*BOARD.WIDTH)+j];
+            var tile = param.board[(i*BOARD.WIDTH)+j];
 
             if(tile != null) {
                 if(tile.isOwn == true) {
@@ -197,11 +197,11 @@ webSocketServer.on("connection", function(ws) {
 
         // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
         if(user.use.length == 0) {
-            processPenalty(user, BOARD.PENALTY_ONE);
+            processPenalty(user, param.isTimeout);
         }else {
 
             // 타일이 규칙에 맞게 배치되어있는지 확인
-            if(rummikub.validateTile(param)) {
+            if(rummikub.validateTile(param.board)) {
                 // 등록 된 사용자인 경우
                 if(user.registerYN) {
 
@@ -224,13 +224,13 @@ webSocketServer.on("connection", function(ws) {
                         validateResult = true;
                     }else {
                         processRollback(user);
-                        processPenalty(user, BOARD.PENALTY_THREE);
+                        processPenalty(user, param.isTimeout);
                     }
                 }
 
             }else {
                 processRollback(user);
-                processPenalty(user, BOARD.PENALTY_THREE);
+                processPenalty(user, param.isTimeout);
             }
 
         }
@@ -247,7 +247,7 @@ webSocketServer.on("connection", function(ws) {
         //성공적으로 turn을 마쳤을 경우
         if(validateResult) {
             // 마지막 성공한 sync화면 저장 (다음 processTurn 수행 시 rollback 작업에 이용)
-            lastSyncTiles = param;
+            lastSyncTiles = param.board;
         }
         
     }
@@ -260,7 +260,9 @@ webSocketServer.on("connection", function(ws) {
         processSync(lastSyncTiles);
     }
 
-    function processPenalty(user, numberOfPenaltyTile) {
+    function processPenalty(user, isTimeout) {
+
+        var numberOfPenaltyTile = isTimeout ? BOARD.PENALTY_THREE : BOARD.PENALTY_ONE;
         var penaltyTiles = rummikub.penaltyTile(numberOfPenaltyTile);
 
         //패널티 타일은 다시 own으로 추가
