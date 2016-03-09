@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta charset="UTF-8">
 	<title>rummi</title>
-  <!-- Pure CSS -->
-  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
+	<!-- Pure CSS -->
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
 	<!-- 초기화 -->
 	<link rel="stylesheet" type="text/css" href="./css/basic.css">
 	<!-- rummi css -->
 	<link rel="stylesheet" type="text/css" href="./css/rummi.css">
-  <script type="text/javascript" src="./js/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="./js/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="./js/jquery-1.11.3.ui.min.js"></script>
-  <script type="text/javascript" src="./js/redips-drag-min.js"></script>
+	<script type="text/javascript" src="./js/redips-drag-min.js"></script>
 	<script type="text/javascript" src="./rummikub.js"></script>
-  <script type="text/javascript" src="./constant.js"></script>
-  <script type="text/javascript" src="./game.js"></script>
-  <script type="text/javascript" src="./sound.js"></script>
+	<script type="text/javascript" src="./constant.js"></script>
+	<script type="text/javascript" src="./game.js"></script>
+	<script type="text/javascript" src="./sound.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function() {
+	  $(document).ready(function() {
       Game.main();
-		});
+	  });
 	</script>
-</head>
-<body>
+  </head>
+  <body>
 
-  <div class="menu">
-    <span class="info">
-      <span id="myInfo"></span>
-      <span id="gamePlaying"></span>
-      <span id="turnCount"></span>
-      <span id="usersInfo"></span>
-    </span>
-    <button type="submit" class="pure-button pure-button-primary" id="gameBtn">게임시작</button>
-    <button class="pure-button" id="messageBtn">메시지창</button>
-    <span id="sandGlass"></span>
-  </div>
-  
-  <div id="redips-drag">
-    <div id="wrap">
-			<table class="gameBoard" id="gameBoard"></table>
-			<table class="ownBoard" id="ownBoard"></table>
-		</div>
+	<div class="menu">
+      <span class="info">
+		<span id="myInfo"></span>
+		<span id="gamePlaying"></span>
+		<span id="turnCount"></span>
+		<span id="usersInfo"></span>
+      </span>
+      <button type="submit" class="pure-button pure-button-primary" id="gameBtn">게임시작</button>
+      <button class="pure-button" id="messageBtn">메시지창</button>
+      <span id="sandGlass"></span>
+	</div>
+	
+	<div id="redips-drag">
+      <div id="wrap">
+		<table class="gameBoard" id="gameBoard"></table>
+		<table class="ownBoard" id="ownBoard"></table>
+	  </div>
 	</div>
 
-  <div class="fixed" id="floatingMessage">
-    <div class="messageBox" id="messages"></div>
-    <div class="sendBox">
-      <input id="msg" type="text" placeholder="메시지">
-      <button class="pure-button" id="sendBtn">전송</button>
-    </div>
-  </div>
+	<div class="fixed" id="floatingMessage">
+      <div class="messageBox" id="messages"></div>
+      <div class="sendBox">
+		<input id="msg" type="text" placeholder="메시지">
+		<button class="pure-button" id="sendBtn">전송</button>
+      </div>
+	</div>
 
-  <div id="dialog">
-  </div>
+	<div id="dialog">
+	</div>
 
-</body>
+  </body>
 </html>
