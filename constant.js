@@ -44,7 +44,6 @@ var MESSAGE = {
 	MSG_NEXT_TURN : "{0} 님 차례 입니다.",
 	MSG_JOIN : "{0} 님이 입장하셨습니다.",
 	MSG_DISCONNECT : "{0} 님이 나가셨습니다.",
-	MSG_RESTART : "게임이 재시작 됩니다.",
 	MSG_CLIENT_COUNT : "[{0}명 접속중]",
 	MSG_TURN_COUNT : "{0}번째 턴",
 	MSG_GAME_READY : "현재 게임 준비중",

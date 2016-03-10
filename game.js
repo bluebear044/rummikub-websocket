@@ -275,7 +275,7 @@ var Game = {
 
   processDisconnect: function(param) {
       var html = "<p>"+ UTIL.getMessage(MESSAGE.MSG_DISCONNECT, param) +" </p>";
-      html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_RESTART) +" </p>"
+      html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_EXIT) +" </p>"
       Game.openDialog(html, null);
   },
 
