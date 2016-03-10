@@ -240,7 +240,7 @@ var Game = {
 				param[idx].isOwn = true;
 				Game.settingTile("#"+BOARD.OWN_BOARD_ID, param[idx], position.i, position.j);
 			}
-		});
+		}, true);
 		
 	},
 
@@ -267,7 +267,8 @@ var Game = {
 
 			html += "<p>"+ param[idx].id + " score : " + param[idx].score + "</p>";        
 		}
-		Game.openDialog(winHtml + html, null);
+		Game.openDialog(winHtml + html, null, false);
+    $("#sandGlass").html("");
 
 		$( "#gameBtn" ).attr("disabled", false);
 		Game.bindGameStartButtonEvent();
@@ -277,7 +278,8 @@ var Game = {
 	processDisconnect: function(param) {
 		var html = "<p>"+ UTIL.getMessage(MESSAGE.MSG_DISCONNECT, param) +" </p>";
 		html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_EXIT) +" </p>"
-		Game.openDialog(html, null);
+		Game.openDialog(html, null, false);
+    $("#sandGlass").html("");
 	},
 
 	processInfo: function(param) {
@@ -520,9 +522,14 @@ var Game = {
 
 	},
 
-	openDialog: function(html, callback) {
+	openDialog: function(html, callback, timeout) {
 		$("#dialog").dialog({
-			close: callback
+			close: callback,
+      open: function(event, ui){
+        if(timeout) {
+          setTimeout("$('#dialog').dialog('close')", BOARD.DIALOG_TIMEOUT);
+        }
+      }
 		});
 		$("#dialog").html(html);
 	},

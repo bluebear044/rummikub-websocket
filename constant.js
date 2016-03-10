@@ -12,6 +12,7 @@ var BOARD = {
 	TIMER_SEC : 60,
 	TIMER_LIMIT : 10,
 	TIMER_INTERVAL : 1000,
+	DIALOG_TIMEOUT : 3000,
 	CHAT_COLOR : ["Aqua", "Turquoise", "Yellow", "Lime", "Chartreuse", "Violet", "Gold", "Orange"],
 	USER_PREFIX : "USER_"
 }
