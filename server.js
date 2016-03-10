@@ -29,6 +29,9 @@ var turnCount = 1;
 var currentPlayer = {};
 var lastSyncTiles = [];
 
+var timer = null;
+var sec = 0;
+
 //broadcast client
 webSocketServer.broadcast = function(data) {
     //console.log("[broadcast msg]=" + JSON.stringify(data));
@@ -170,6 +173,9 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_NEXT_TURN, currentPlayer.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
 
+        //Timer Start
+        sandGlassTimer(true);
+
     }
 
     function processTurn(param, user) {
@@ -249,6 +255,9 @@ webSocketServer.on("connection", function(ws) {
             // 마지막 성공한 sync화면 저장 (다음 processTurn 수행 시 rollback 작업에 이용)
             lastSyncTiles = param.board;
         }
+
+        //Timer reStart
+        sandGlassTimer(true);
         
     }
 
@@ -278,6 +287,9 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, MESSAGE.MSG_EXIT));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.EXIT ));
+
+        //Timer End
+        sandGlassTimer(false);
     }
 
     function processWin() {
@@ -343,6 +355,31 @@ webSocketServer.on("connection", function(ws) {
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_CHANGE_NAME, originName, newName) ));
         webSocketServer.sendMessage(UTIL.makeCommand( CMD.PRIVATE_INFO, userInfo(user) ), user.id);
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
+    }
+
+    function sandGlassTimer(enable) {
+
+        if(timer != null) {
+            clearInterval(timer); 
+        }
+
+        if(enable) {
+            sec = BOARD.TIMER_SEC;
+            timer = setInterval(function(){
+                sandGlassTrigger();
+            }, BOARD.TIMER_INTERVAL);
+        }else {
+            sec = 0;
+        }
+
+    }
+
+    function sandGlassTrigger() {
+        var param = {};
+        param.sec = sec;
+        param.currentPlayerID = currentPlayer.id;
+        webSocketServer.broadcast(UTIL.makeCommand( CMD.TIMER, param ));
+        sec--;
     }
 
 })

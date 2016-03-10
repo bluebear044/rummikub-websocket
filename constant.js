@@ -11,6 +11,7 @@ var BOARD = {
 	MESSAGE_COLOR : "White",
 	TIMER_SEC : 60,
 	TIMER_LIMIT : 10,
+	TIMER_INTERVAL : 1000,
 	CHAT_COLOR : ["Aqua", "Turquoise", "Yellow", "Lime", "Chartreuse", "Violet", "Gold", "Orange"],
 	USER_PREFIX : "USER_"
 }
@@ -27,7 +28,8 @@ var CMD = {
 	PENALTY : "::PENALTY::",
 	ROLLBACK : "::ROLLBACK",
 	WIN : "::WIN::",
-	DISCONNECT : "DISCONNECT"
+	DISCONNECT : "DISCONNECT",
+	TIMER : "::TIMER::"
 };
 
 var INLINE_CMD = {

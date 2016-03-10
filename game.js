@@ -14,8 +14,6 @@ default:
 
 var ws;
 var user={};
-var timer;
-var sec;
 
 var Game = {
 
@@ -72,6 +70,10 @@ var Game = {
 			}else if(responseObject.command == CMD.CHAT) {
 
 				Game.processChat(responseObject.param);
+
+      }else if(responseObject.command == CMD.TIMER) {
+
+        Game.processTimer(responseObject.param);
 
 			}else {
 				// nothing happen
@@ -244,7 +246,6 @@ var Game = {
 
 	processExit: function() {
 
-		Game.sandGlassTrigger(false);
 		Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
 		Game.clearBoard("#"+BOARD.OWN_BOARD_ID);
 		Game.introBoard();
@@ -275,7 +276,7 @@ var Game = {
 
 	processDisconnect: function(param) {
 		var html = "<p>"+ UTIL.getMessage(MESSAGE.MSG_DISCONNECT, param) +" </p>";
-		html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_RESTART) +" </p>"
+		html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_EXIT) +" </p>"
 		Game.openDialog(html, null);
 	},
 
@@ -303,18 +304,10 @@ var Game = {
 		if(param.gamePlayingFlag == true ) {
 			//Active/Deactive turn button
 			if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
-
-				//내 차례인 경우 sandGlass trigger
-				Game.sandGlassTrigger(true);
-
 				$( "#gameBtn" ).attr("disabled", false);
 				Redips.enableDrag(BOARD.GAME_BOARD_ID, true);
 				Redips.enableDrag(BOARD.OWN_BOARD_ID, true);
 			}else {
-
-				//내 차례가 아닌 경우 sandGlass trigger 중지
-				Game.sandGlassTrigger(false);
-
 				$( "#gameBtn" ).attr("disabled", true);
 				Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
 				Redips.enableDrag(BOARD.OWN_BOARD_ID, true); // 턴이 종료되어도 own보드의 타일은 움직일 수 있도록 처리
@@ -534,35 +527,24 @@ var Game = {
 		$("#dialog").html(html);
 	},
 
-	sandGlassTrigger: function(enable) {
+	processTimer: function(param) {
 
-		if(enable) {
+    var sec = param.sec;
+    var currentPlayerID = param.currentPlayerID;
 
-			sec = BOARD.TIMER_SEC;
-			window.clearInterval(timer);
-
-			timer = window.setInterval(function(){
-				if(sec == 0) {
-
-					$("#sandGlass").html("");
-					window.clearInterval(timer);
-					Game.nextTurn(ws, true); //isTimeout true
-
-				}else if(sec < BOARD.TIMER_LIMIT && sec > 0) {
-					Sound.playEffect("alert");
-					$("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");
-				}else {
-					$("#sandGlass").html(UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)));
-				}
-				sec--;
-			}, 1000);
-
-		}else {
-			$("#sandGlass").html("");
-			window.clearInterval(timer);
-		}
-		
-	}
+    if(sec == 0) {
+      $("#sandGlass").html("");
+      if(currentPlayerID == user.id) {
+        Game.nextTurn(ws, true); //isTimeout true
+      }
+    }else if(sec < BOARD.TIMER_LIMIT && sec > 0) {
+      Sound.playEffect("alert");
+      $("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");
+    }else {
+      $("#sandGlass").html(UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)));
+    }
+    
+  }
 
 };
 
