@@ -82,7 +82,7 @@ webSocketServer.on("connection", function(ws) {
         }else {
             // nothing happen
         }
-    
+		
     });
     
     ws.on("close", function() {
@@ -182,17 +182,17 @@ webSocketServer.on("connection", function(ws) {
         
         // 게임보드에 놓인 타일 중에 사용한 타일은 user.use에 추가하고 user.own에서는 제거
         for(var i=0; i<BOARD.HEIGHT; i++) {
-          for(var j=0; j<BOARD.WIDTH; j++) {
-            var tile = param.board[(i*BOARD.WIDTH)+j];
+			for(var j=0; j<BOARD.WIDTH; j++) {
+				var tile = param.board[(i*BOARD.WIDTH)+j];
 
-            if(tile != null) {
-                if(tile.isOwn == true) {
-                    user.use.push(tile);
-                    user.removeOwnTile(tile);    
-                }
-            }
-            
-          }
+				if(tile != null) {
+					if(tile.isOwn == true) {
+						user.use.push(tile);
+						user.removeOwnTile(tile);    
+					}
+				}
+				
+			}
         }
 
         // 사용자가 사용한 타일이 없으면 패털티로 타일 한개 가져감
@@ -274,7 +274,7 @@ webSocketServer.on("connection", function(ws) {
 
     function processExit() {
         gamePlayingFlag = false;
-   
+		
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, MESSAGE.MSG_EXIT));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.EXIT ));
@@ -282,7 +282,7 @@ webSocketServer.on("connection", function(ws) {
 
     function processWin() {
         gamePlayingFlag = false;
-   
+		
         webSocketServer.broadcast(UTIL.makeCommand( CMD.CHAT, UTIL.getMessage(MESSAGE.MSG_WIN, user.id) ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.INFO, boardInfo() ));
         webSocketServer.broadcast(UTIL.makeCommand( CMD.WIN, userScoreInfo() ));
@@ -302,7 +302,7 @@ webSocketServer.on("connection", function(ws) {
         }else if(message.indexOf(INLINE_CMD.CHANGE_NAME) == 0 ) {
 
             processChangeName(message);
-        
+			
         }else {
             var obj = {};
             obj.text = user.id + " : " + message;

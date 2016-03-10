@@ -1,36 +1,36 @@
 var Sound = {
 
-  initialize: function() {
+	initialize: function() {
 
-    var filePath = "./sound/";
-    var effectNameArr = ["cardPlace"
-                        ,"chat"
-                        ,"bell"
-                        ,"alert"
-                        ];
+		var filePath = "./sound/";
+		var effectNameArr = ["cardPlace"
+							 ,"chat"
+							 ,"bell"
+							 ,"alert"
+							];
 
-    for(var idx in effectNameArr){
-      var audioElement = document.createElement("audio");
-      var sourceElement = document.createElement("source");
+		for(var idx in effectNameArr){
+			var audioElement = document.createElement("audio");
+			var sourceElement = document.createElement("source");
 
-      sourceElement.src = filePath + effectNameArr[idx] + ".mp3";
-      sourceElement.type = "audio/mpeg";
+			sourceElement.src = filePath + effectNameArr[idx] + ".mp3";
+			sourceElement.type = "audio/mpeg";
 
-      document.body.appendChild(audioElement);
+			document.body.appendChild(audioElement);
 
-      audioElement.setAttribute("id", effectNameArr[idx]);
-      audioElement.appendChild(sourceElement);
-    }
+			audioElement.setAttribute("id", effectNameArr[idx]);
+			audioElement.appendChild(sourceElement);
+		}
 
-  },
+	},
 
-  playEffect: function(id) {
+	playEffect: function(id) {
 
-    var hitSound = new Audio();
-    hitSound = document.getElementById(id); 
-    hitSound.currentTime = 0;
-    hitSound.play();  
+		var hitSound = new Audio();
+		hitSound = document.getElementById(id); 
+		hitSound.currentTime = 0;
+		hitSound.play();  
 
-  }
+	}
 
 };
