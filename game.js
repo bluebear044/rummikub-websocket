@@ -559,7 +559,7 @@ var Redips = {
 	initialize: function() {
 		
 		//REDIPS.drag.init(); //처음부터 타일 움직이지 못하도록 초기화 하지 않음
-		REDIPS.drag.dropMode = "single";
+		REDIPS.drag.dropMode = "switching";
 		REDIPS.drag.hover.colorTd = "";
 
 		//REDIPS Dropped Event
