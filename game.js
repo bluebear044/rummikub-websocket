@@ -74,11 +74,9 @@ var Game = {
       }else if(responseObject.command == CMD.TIMER) {
 
         Game.processTimer(responseObject.param);
-
 			}else {
 				// nothing happen
 			}
-			
 		}
 
 		//Button Event Register
@@ -96,7 +94,6 @@ var Game = {
 
 		//Sound Initialize
 		Sound.initialize();
-
 	},
 
 	registerButtonEvent: function() {
@@ -121,7 +118,6 @@ var Game = {
 		$( "#dialog" ).click(function() {
 			$(this).dialog('close');
 		});
-
 	},
 
 	bindGameStartButtonEvent: function() {
@@ -147,7 +143,6 @@ var Game = {
 
 	syncBoard: function() {
 		var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
-		//console.log(JSON.stringify(boardSerializeMap));
 		var requestObject = UTIL.makeCommand(CMD.SYNC, boardSerializeMap);
 
 		console.log("REQUEST CMD : " + requestObject.command);
@@ -166,10 +161,7 @@ var Game = {
 	},
 
 	nextTurn: function(ws, isTimeout) {
-		
 		var boardSerializeMap = Game.serializeTable("#"+BOARD.GAME_BOARD_ID);
-		//console.log(JSON.stringify(boardSerializeMap));
-
 		var param = {};
 		param.board = boardSerializeMap;
 		param.isTimeout = isTimeout;
@@ -178,67 +170,58 @@ var Game = {
 	},
 
 	processStart: function(param) {
-
 		Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
 		for(var idx in param.own) {
 			var i = Math.floor(idx/BOARD.WIDTH);
 			var j = idx%BOARD.WIDTH;
 			Game.settingTile("#"+BOARD.OWN_BOARD_ID, param.own[idx], i, j);
 		}
-
 		Game.bindTurnButtonEvent();
-
 	},
 
 	processTurn: function(param) {
-
 		//turn종료 당시 gameBoard에 있는 타일은 ownBoard로 못 옮기도록 설정 (id값을 own_xxxx 에서 game_xxxx로 바꿈)
 		var tbl = $("table" + "#" + BOARD.GAME_BOARD_ID + " tr").map(function() {
 			return $(this).find('td').map(function() {
-				if($(this).html() != "") {
-
+				if ($(this).html() != "") {
 					var tileId = $(this).children("div").attr("id");
-					if(tileId.split("_")[0] == "own") {
-						$(this).children("div").attr("id",tileId.replace("own","game"));
+					if (tileId.split("_")[0] == "own") {
+						$(this).children("div").attr("id", tileId.replace("own", "game"));
 					}
-
 				}
 			}).get();
 		}).get();
-
 	},
 
-	processRollback: function(param) {
-
-		for(var idx in param) {
+	processRollback: function(params) {
+		for(var idx in params) {
 			var position = Game.getEmptySpaceTablePosition("#"+BOARD.OWN_BOARD_ID, BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
-			param[idx].isOwn = true;
-			Game.settingTile("#"+BOARD.OWN_BOARD_ID, param[idx], position.i, position.j);
-		}
-		
+			params[idx].isOwn = true;
+			Game.settingTile("#"+BOARD.OWN_BOARD_ID, params[idx], position.i, position.j);
+		}		
 	},
 
-	processPenalty: function(param) {
+	processPenalty: function(params) {
 
 		//dialog message
 		var html = "";
-		html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, param.length)+"</p>"
+		html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_PENALTY, user.id, params.length)+"</p>"
 		html += "<span>"
-		for(var idx in param) {
-			if(param[idx].isJoker) {
+		for(var idx in params) {
+			if(params[idx].isJoker) {
 				html += "<div class=\"card\"><span class=\"jo_eye\"></span><span class=\"jo_eye\"></span><span class=\"jo_mouth circle\"></span></div>";
 			}else {
-				html += "<div class=\"card\"><span class=\""+param[idx].color+" circle\">"+param[idx].score+"</span></div>";
+				html += "<div class=\"card\"><span class=\""+params[idx].color+" circle\">"+params[idx].score+"</span></div>";
 			}
 		}
 		html += "</span>"
 
 		Game.openDialog(html, function() {
 			//setting tiles  
-			for(var idx in param) {
+			for(var idx in params) {
 				var position = Game.getEmptySpaceTablePosition("#"+BOARD.OWN_BOARD_ID, BOARD.OWN_WIDTH, BOARD.OWN_HEIGHT);
-				param[idx].isOwn = true;
-				Game.settingTile("#"+BOARD.OWN_BOARD_ID, param[idx], position.i, position.j);
+				params[idx].isOwn = true;
+				Game.settingTile("#"+BOARD.OWN_BOARD_ID, params[idx], position.i, position.j);
 			}
 		}, true);
 		
@@ -255,20 +238,20 @@ var Game = {
 
 	},
 
-	processWin: function(param) {
+	processWin: function(params) {
 
 		var html = "";
 		var winHtml = "";
-		for(var idx in param) {
+		for(var idx in params) {
 
-			if(param[idx].isWin) {
-				winHtml += "<p>"+ UTIL.getMessage(MESSAGE.MSG_WIN, param[idx].id) +" </p>"; 
+			if(params[idx].isWin) {
+				winHtml += "<p>"+ UTIL.getMessage(MESSAGE.MSG_WIN, params[idx].id) +" </p>"; 
 			}
 
-			html += "<p>"+ param[idx].id + " score : " + param[idx].score + "</p>";        
+			html += "<p>"+ params[idx].id + " score : " + params[idx].score + "</p>";        
 		}
 		Game.openDialog(winHtml + html, null, false);
-    $("#sandGlass").html("");
+		$("#sandGlass").html("");
 
 		$( "#gameBtn" ).attr("disabled", false);
 		Game.bindGameStartButtonEvent();
@@ -279,7 +262,7 @@ var Game = {
 		var html = "<p>"+ UTIL.getMessage(MESSAGE.MSG_DISCONNECT, param) +" </p>";
 		html += "<p>"+ UTIL.getMessage(MESSAGE.MSG_EXIT) +" </p>"
 		Game.openDialog(html, null, false);
-    $("#sandGlass").html("");
+		$("#sandGlass").html("");
 	},
 
 	processInfo: function(param) {
@@ -296,27 +279,27 @@ var Game = {
 			$( "#turnCount" ).empty();
 		}
 
-		//Active/Deactive start button
-		if(param.usersInfo.length > 1 && param.gamePlayingFlag == false) {
+		// Active / Deactive start button
+		if (param.usersInfo.length > 1 && param.gamePlayingFlag == false) {
 			$( "#gameBtn" ).attr("disabled", false);
 		}else {
 			$( "#gameBtn" ).attr("disabled", true);
 		}
 
-		if(param.gamePlayingFlag == true ) {
-			//Active/Deactive turn button
-			if(user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
+		if (param.gamePlayingFlag == true ) {
+			user.myturn = (user.id == param.currentPlayerID);
+			// Active / Deactive turn button
+			if (user.id == param.currentPlayerID && param.gamePlayingFlag == true) {
 				$( "#gameBtn" ).attr("disabled", false);
 				Redips.enableDrag(BOARD.GAME_BOARD_ID, true);
 				Redips.enableDrag(BOARD.OWN_BOARD_ID, true);
-			}else {
+			} else {
 				$( "#gameBtn" ).attr("disabled", true);
 				Redips.enableDrag(BOARD.GAME_BOARD_ID, false);
 				Redips.enableDrag(BOARD.OWN_BOARD_ID, true); // 턴이 종료되어도 own보드의 타일은 움직일 수 있도록 처리
 				// Redips.enableDrag(BOARD.OWN_BOARD_ID, false);
 			}
 		}
-
 	},
 
 	processPrivateInfo: function(param) {
@@ -329,30 +312,25 @@ var Game = {
 
 	},
 
-	processSync: function(param) {
-
-		Game.clearBoard("#"+BOARD.GAME_BOARD_ID);
-
-		for(var i=0; i<BOARD.HEIGHT; i++) {
-			for(var j=0; j<BOARD.WIDTH; j++) {
-				var tile = param[(i*BOARD.WIDTH)+j];
-
-				if(tile != null) {
-					Game.settingTile("#"+BOARD.GAME_BOARD_ID, tile, i, j);
+	processSync: function(params) {
+		Game.clearBoard("#" + BOARD.GAME_BOARD_ID);
+		for (var i = 0; i < BOARD.HEIGHT; i++) {
+			for (var j = 0; j < BOARD.WIDTH; j++) {
+				var tile = params[(i * BOARD.WIDTH) + j];
+				if (tile != null) {
+					Game.settingTile("#" + BOARD.GAME_BOARD_ID, tile, i, j);
 				}
-				
 			}
 		}
-
 	},
 
 	processChat: function(message) {
 
 		if (message instanceof Object) {
-			$("#messages").append("<p style='color:"+message.color+"'>"+message.text+"</p>");
+			$("#messages").append("<p style='color:" + message.color + "'>" + message.text + "</p>");
 			Sound.playEffect("chat");
 		}else{
-			$("#messages").append("<p style='color:"+BOARD.MESSAGE_COLOR+"'>"+message+"</p>");
+			$("#messages").append("<p style='color:" + BOARD.MESSAGE_COLOR + "'>" + message + "</p>");
 		}
 
 		//메시지창 스크롤 최하단 유지
@@ -363,7 +341,7 @@ var Game = {
 		var tileHtml = "";
 		var cardID = "";
 
-		if("#"+BOARD.OWN_BOARD_ID == id || tile.isOwn == true){
+		if("#" + BOARD.OWN_BOARD_ID == id || tile.isOwn == true){
 			cardID = "own_"+UTIL.random4digit();
 			// id가 own으로 시작하는 경우 "redips-mark" class가 지정된 ownBoard에 타일을 놓을 수 있도록 설정
 			// (기본적으로 redips-mark 로 지정된 곳에는 어떤 요소도 놓을 수 없음)
@@ -536,24 +514,26 @@ var Game = {
 
 	processTimer: function(param) {
 
-    var sec = param.sec;
-    var currentPlayerID = param.currentPlayerID;
+		var sec = param.sec;
+		var currentPlayerID = param.currentPlayerID;
 
-    if(sec == 0) {
-      $("#sandGlass").html("");
-      if(currentPlayerID == user.id) {
-        Game.nextTurn(ws, true); //isTimeout true
-      }
-    }else if(sec < BOARD.TIMER_LIMIT && sec > 0) {
-      Sound.playEffect("alert");
-      $("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");
-    }else {
-      $("#sandGlass").html(UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)));
-    }
-    
-  }
-
+		if (sec == 0) {
+			$("#sandGlass").html("");
+			if (currentPlayerID == user.id) {
+				Game.nextTurn(ws, true); //isTimeout true
+			}
+		} else if (sec < BOARD.TIMER_LIMIT && sec > 0) {
+			Sound.playEffect("alert");
+			$("#sandGlass").html("<span class=\"alert\">" + UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)) + "</span>");
+		} else {
+			$("#sandGlass").html(UTIL.getMessage(MESSAGE.MSG_TIMER, Number(sec)));
+		}		
+	}
 };
+
+function isMyTurn(user) {
+	return user.myturn ? true : false;
+}
 
 var Redips = {
 	initialize: function() {
@@ -564,7 +544,9 @@ var Redips = {
 
 		//REDIPS Dropped Event
 		REDIPS.drag.event.dropped = function () {
-			Game.syncBoard();
+			if (isMyTurn(user)) {
+				Game.syncBoard();
+			}
 			Sound.playEffect("cardPlace");
 		};
 	},
