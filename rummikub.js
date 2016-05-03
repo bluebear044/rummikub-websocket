@@ -102,6 +102,8 @@ Rummikub.prototype.validateTile = function(param) {
 				continue;
 			}else {
 				
+				return false;
+				/*
 				//루미큐브 조건을 모두 통과하지 못한 경우에는 타일이 연속된 경우일 수도 있기 때문에
 				//새롭게 루미큐브 조건을 검사하기 위해 마지막 타일만 남기고 그룹을 초기화 한다
 				//이때 사용되지 않은 조커블럭은 그대로 놔둔다.
@@ -131,6 +133,7 @@ Rummikub.prototype.validateTile = function(param) {
 				//마지막 타일과 위애서 뽑아낸 joker그룹을 합침
 				group = jokerGroup.concat(group.splice(group.length-1, 1));
 				//console.log(group);
+				*/
 
 			}
 
